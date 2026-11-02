@@ -1,10 +1,10 @@
 export interface Studio {
-  _id?: string;
+  _id: string;
   title: string;
   category: string;
   hourlyRate: number;
-  securityDeposit?: number;
-  maxCapacity?: number;
+  securityDeposit: number;
+  maxCapacity: number;
   location: string;
   imageUrl: string;
   amenities: string[];
