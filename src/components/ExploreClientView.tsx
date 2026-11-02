@@ -19,6 +19,13 @@ const CATEGORIES = [
   "Creative Workshop",
 ];
 
+type SortOption =
+  | "default"
+  | "price-low-high"
+  | "price-high-low"
+  | "capacity-low-high"
+  | "capacity-high-low";
+
 interface ExploreClientViewProps {
   studios: Studio[];
   activeCategory: string;
@@ -28,24 +35,28 @@ export default function ExploreClientView({
   studios,
   activeCategory,
 }: ExploreClientViewProps) {
-  const [sortOrder, setSortOrder] = useState<
-    "default" | "low-high" | "high-low"
-  >("default");
+  const [sortOrder, setSortOrder] = useState<SortOption>("default");
 
-  // Sort studios based on hourlyRate
+  // Sort studios based on hourlyRate or maxCapacity
   const sortedStudios = useMemo(() => {
     let result = [...studios];
-    if (sortOrder === "low-high") {
+
+    if (sortOrder === "price-low-high") {
       result.sort((a, b) => (a.hourlyRate || 0) - (b.hourlyRate || 0));
-    } else if (sortOrder === "high-low") {
+    } else if (sortOrder === "price-high-low") {
       result.sort((a, b) => (b.hourlyRate || 0) - (a.hourlyRate || 0));
+    } else if (sortOrder === "capacity-low-high") {
+      result.sort((a, b) => (a.maxCapacity || 0) - (b.maxCapacity || 0));
+    } else if (sortOrder === "capacity-high-low") {
+      result.sort((a, b) => (b.maxCapacity || 0) - (a.maxCapacity || 0));
     }
+
     return result;
   }, [studios, sortOrder]);
 
   return (
     <div>
-      {/* Controls Bar: Category Pills & Price Sorting */}
+      {/* Controls Bar: Category Pills & Sorting Select */}
       <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
         {/* Category Quick Filter Pills */}
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
@@ -74,19 +85,21 @@ export default function ExploreClientView({
           })}
         </div>
 
-        {/* Price Sorting Selector */}
+        {/* Sorting Selector */}
         <div className="flex items-center gap-2 w-full md:w-auto justify-end">
           <span className="text-xs font-semibold text-gray-500 dark:text-zinc-400 whitespace-nowrap">
-            Sort by Price:
+            Sort by:
           </span>
           <select
             value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value as any)}
+            onChange={(e) => setSortOrder(e.target.value as SortOption)}
             className="p-2.5 bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl text-gray-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             <option value="default">Default Order</option>
-            <option value="low-high">Price: Low to High</option>
-            <option value="high-low">Price: High to Low</option>
+            <option value="price-low-high">Price: Low to High</option>
+            <option value="price-high-low">Price: High to Low</option>
+            <option value="capacity-low-high">Capacity: Low to High</option>
+            <option value="capacity-high-low">Capacity: High to Low</option>
           </select>
         </div>
       </div>
