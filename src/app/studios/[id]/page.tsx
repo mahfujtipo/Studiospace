@@ -214,6 +214,7 @@ async function StudioDetailContent({
         {/* Right Column: Booking Card */}
         <div className="lg:col-span-1">
           <BookingCard
+            studioId={studio._id}
             hourlyRate={studio.hourlyRate ?? 0}
             securityDeposit={studio.securityDeposit ?? 0}
           />

@@ -1,45 +1,48 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 interface BookingCardProps {
+  studioId: string;
   hourlyRate: number;
   securityDeposit: number;
 }
 
 export default function BookingCard({
+  studioId,
   hourlyRate,
   securityDeposit,
 }: BookingCardProps) {
+  const { data: session } = authClient.useSession();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [today, setToday] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     const currentDate = new Date();
-
     const localDate = [
       currentDate.getFullYear(),
       String(currentDate.getMonth() + 1).padStart(2, "0"),
       String(currentDate.getDate()).padStart(2, "0"),
     ].join("-");
-
     setToday(localDate);
   }, []);
 
   useEffect(() => {
     if (!isModalOpen) return;
-
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsModalOpen(false);
       }
     };
-
     document.addEventListener("keydown", handleEscape);
-
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
@@ -57,7 +60,6 @@ export default function BookingCard({
     startTime !== "" && endTime !== "" && endMinutes > startMinutes;
 
   const duration = isValidTime ? (endMinutes - startMinutes) / 60 : 0;
-
   const rentalCost = duration * hourlyRate;
   const totalPrice = rentalCost + securityDeposit;
 
@@ -66,14 +68,67 @@ export default function BookingCard({
   const formatCurrency = (amount: number) =>
     `৳${Number(amount.toFixed(2)).toLocaleString("en-BD")}`;
 
-  const handleConfirmBooking = () => {
-    if (!isBookingReady) return;
+  const handleConfirmBooking = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
 
-    alert(
-      `Booking Preview\n\nDate: ${date}\nStart Time: ${startTime}\nEnd Time: ${endTime}\nDuration: ${duration} hours\nEstimated Total: ${formatCurrency(totalPrice)}\n\nActual booking functionality will be implemented later.`,
-    );
+    if (!isBookingReady || isLoading) return;
 
-    setIsModalOpen(false);
+    if (!session?.user) {
+      setError("Please login before booking a studio.");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+    setSuccess("");
+
+    const bookingPayload = {
+      studioId,
+      bookingDate: date,
+      startTime,
+      endTime,
+      duration,
+      hourlyRate,
+      securityDeposit,
+      totalAmount: totalPrice,
+      userId: session.user.id,
+      userName: session.user.name,
+      userEmail: session.user.email,
+    };
+    console.log("CHECKING BOOKING PAYLOAD:", bookingPayload);
+
+    try {
+      const response = await fetch("http://localhost:8000/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bookingPayload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Booking failed");
+      }
+
+      setSuccess("Your booking request was submitted successfully!");
+      setDate("");
+      setStartTime("");
+      setEndTime("");
+
+      // বুকিং সফল হওয়ার ১.৫ সেকেন্ড পর মোডাল বক্সটি স্বয়ংক্রিয়ভাবে বন্ধ হয়ে যাবে
+      setTimeout(() => {
+        setIsModalOpen(false);
+        setSuccess("");
+      }, 1500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -89,7 +144,6 @@ export default function BookingCard({
             <span className="text-3xl font-extrabold text-gray-900 dark:text-white">
               {formatCurrency(hourlyRate)}
             </span>
-
             <span className="text-xs text-gray-500 dark:text-zinc-400 ml-1">
               / hour
             </span>
@@ -99,7 +153,6 @@ export default function BookingCard({
         <div className="space-y-4 mb-6 text-sm">
           <div className="flex justify-between text-gray-600 dark:text-zinc-300">
             <span>Security Deposit</span>
-
             <span className="font-semibold text-gray-900 dark:text-white">
               {formatCurrency(securityDeposit)}
             </span>
@@ -108,7 +161,11 @@ export default function BookingCard({
 
         <button
           type="button"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setError("");
+            setSuccess("");
+            setIsModalOpen(true);
+          }}
           className="w-full inline-flex items-center justify-center py-3.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-base transition-colors shadow-lg shadow-emerald-600/25"
         >
           Book This Studio
@@ -124,7 +181,7 @@ export default function BookingCard({
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
+            if (event.target === event.currentTarget && !isLoading) {
               setIsModalOpen(false);
             }
           }}
@@ -144,7 +201,6 @@ export default function BookingCard({
                 >
                   Book This Studio
                 </h2>
-
                 <p className="text-sm text-gray-500 dark:text-zinc-400 mt-1">
                   Select your preferred date and time
                 </p>
@@ -152,6 +208,7 @@ export default function BookingCard({
 
               <button
                 type="button"
+                disabled={isLoading}
                 onClick={() => setIsModalOpen(false)}
                 aria-label="Close booking modal"
                 className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
@@ -172,127 +229,138 @@ export default function BookingCard({
               </button>
             </div>
 
-            <div className="p-6 space-y-5">
-              {/* Booking Date */}
-              <div>
-                <label
-                  htmlFor="booking-date"
-                  className="block text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-2"
+            <form onSubmit={handleConfirmBooking}>
+              <div className="p-6 space-y-5">
+                {/* Booking Date */}
+                <div>
+                  <label
+                    htmlFor="booking-date"
+                    className="block text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-2"
+                  >
+                    Select Booking Date
+                  </label>
+                  <input
+                    id="booking-date"
+                    type="date"
+                    min={today || undefined}
+                    value={date}
+                    required
+                    onChange={(event) => setDate(event.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+
+                {/* Start and End Time */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      htmlFor="start-time"
+                      className="block text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-2"
+                    >
+                      Start Time
+                    </label>
+                    <input
+                      id="start-time"
+                      type="time"
+                      value={startTime}
+                      required
+                      onChange={(event) => setStartTime(event.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="end-time"
+                      className="block text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-2"
+                    >
+                      End Time
+                    </label>
+                    <input
+                      id="end-time"
+                      type="time"
+                      value={endTime}
+                      required
+                      onChange={(event) => setEndTime(event.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                {startTime && endTime && !isValidTime && (
+                  <p className="text-sm text-red-500">
+                    End time must be later than start time.
+                  </p>
+                )}
+
+                {/* Duration */}
+                <div className="flex justify-between items-center bg-emerald-50 dark:bg-emerald-950/30 rounded-xl p-4">
+                  <span className="text-sm font-medium text-gray-700 dark:text-zinc-300">
+                    Booking Duration
+                  </span>
+                  <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                    {duration > 0 ? `${duration} hours` : "Not selected"}
+                  </span>
+                </div>
+
+                {/* Price Summary */}
+                <div className="border-t border-gray-100 dark:border-zinc-800 pt-5 space-y-4">
+                  <h3 className="font-bold text-gray-900 dark:text-white">
+                    Price Summary
+                  </h3>
+
+                  <div className="flex justify-between text-sm text-gray-600 dark:text-zinc-300">
+                    <span>Hourly Rate</span>
+                    <span>{formatCurrency(hourlyRate)}</span>
+                  </div>
+
+                  <div className="flex justify-between text-sm text-gray-600 dark:text-zinc-300">
+                    <span>Rental Cost</span>
+                    <span>{formatCurrency(rentalCost)}</span>
+                  </div>
+
+                  <div className="flex justify-between text-sm text-gray-600 dark:text-zinc-300">
+                    <span>Security Deposit</span>
+                    <span>{formatCurrency(securityDeposit)}</span>
+                  </div>
+
+                  <div className="flex justify-between items-center border-t border-gray-100 dark:border-zinc-800 pt-4">
+                    <span className="font-bold text-gray-900 dark:text-white">
+                      Estimated Total
+                    </span>
+                    <span className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
+                      {formatCurrency(totalPrice)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Error and Success Messages */}
+                {error && (
+                  <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/30 p-3 rounded-lg">
+                    {error}
+                  </p>
+                )}
+
+                {success && (
+                  <p className="text-sm text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 p-3 rounded-lg">
+                    {success}
+                  </p>
+                )}
+
+                {/* Confirm Button */}
+                <button
+                  type="submit"
+                  disabled={!isBookingReady || isLoading}
+                  className="w-full py-3.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold transition-colors shadow-lg shadow-emerald-600/25"
                 >
-                  Select Booking Date
-                </label>
+                  {isLoading ? "Submitting..." : "Confirm Booking"}
+                </button>
 
-                <input
-                  id="booking-date"
-                  type="date"
-                  min={today || undefined}
-                  value={date}
-                  onChange={(event) => setDate(event.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-              </div>
-
-              {/* Start and End Time */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="start-time"
-                    className="block text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-2"
-                  >
-                    Start Time
-                  </label>
-
-                  <input
-                    id="start-time"
-                    type="time"
-                    value={startTime}
-                    onChange={(event) => setStartTime(event.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="end-time"
-                    className="block text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-2"
-                  >
-                    End Time
-                  </label>
-
-                  <input
-                    id="end-time"
-                    type="time"
-                    value={endTime}
-                    onChange={(event) => setEndTime(event.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
-              </div>
-
-              {startTime && endTime && !isValidTime && (
-                <p className="text-sm text-red-500">
-                  End time must be later than start time.
+                <p className="text-xs text-center text-gray-400 dark:text-zinc-500">
+                  Your booking request will be submitted for approval.
                 </p>
-              )}
-
-              {/* Duration */}
-              <div className="flex justify-between items-center bg-emerald-50 dark:bg-emerald-950/30 rounded-xl p-4">
-                <span className="text-sm font-medium text-gray-700 dark:text-zinc-300">
-                  Booking Duration
-                </span>
-
-                <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                  {duration > 0 ? `${duration} hours` : "Not selected"}
-                </span>
               </div>
-
-              {/* Price Summary */}
-              <div className="border-t border-gray-100 dark:border-zinc-800 pt-5 space-y-4">
-                <h3 className="font-bold text-gray-900 dark:text-white">
-                  Price Summary
-                </h3>
-
-                <div className="flex justify-between text-sm text-gray-600 dark:text-zinc-300">
-                  <span>Hourly Rate</span>
-                  <span>{formatCurrency(hourlyRate)}</span>
-                </div>
-
-                <div className="flex justify-between text-sm text-gray-600 dark:text-zinc-300">
-                  <span>Rental Cost</span>
-                  <span>{formatCurrency(rentalCost)}</span>
-                </div>
-
-                <div className="flex justify-between text-sm text-gray-600 dark:text-zinc-300">
-                  <span>Security Deposit</span>
-                  <span>{formatCurrency(securityDeposit)}</span>
-                </div>
-
-                <div className="flex justify-between items-center border-t border-gray-100 dark:border-zinc-800 pt-4">
-                  <span className="font-bold text-gray-900 dark:text-white">
-                    Estimated Total
-                  </span>
-
-                  <span className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
-                    {formatCurrency(totalPrice)}
-                  </span>
-                </div>
-              </div>
-
-              {/* Confirm Button */}
-              <button
-                type="button"
-                disabled={!isBookingReady}
-                onClick={handleConfirmBooking}
-                className="w-full py-3.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold transition-colors shadow-lg shadow-emerald-600/25"
-              >
-                Confirm Booking
-              </button>
-
-              <p className="text-xs text-center text-gray-400 dark:text-zinc-500">
-                This is a booking preview. Actual reservation functionality will
-                be implemented later.
-              </p>
-            </div>
+            </form>
           </div>
         </div>
       )}
