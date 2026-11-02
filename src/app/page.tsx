@@ -2,6 +2,7 @@ import Categories from "@/components/Categories";
 import FeaturedStudios from "@/components/FeaturedStudios";
 import FeaturedStudiosSkeleton from "@/components/FeaturedStudiosSkeleton";
 import HeroBanner from "@/components/HeroBanner";
+import HostGuarantee from "@/components/HostGuarantee";
 import HowItWorks from "@/components/HowItWorks";
 import { Suspense } from "react";
 
@@ -14,6 +15,7 @@ export default function Home() {
       </Suspense>
       <Categories />
       <HowItWorks />
+      <HostGuarantee />
     </main>
   );
 }
