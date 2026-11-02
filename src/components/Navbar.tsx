@@ -1,3 +1,5 @@
+// src/components/Navbar.tsx
+
 "use client";
 
 import Link from "next/link";
@@ -87,8 +89,9 @@ export default function Navbar() {
             Log In
           </Link>
 
+          {/* ডেথকটপ Sign Up লিংকটি /signup থেকে /register করা হলো */}
           <Link
-            href="/signup"
+            href="/register"
             className="rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-600"
           >
             Sign Up
@@ -106,7 +109,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Menu Dropdown (Dynamically matches light/dark theme) */}
+      {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div
           className={`border-t px-6 py-5 backdrop-blur-md md:hidden ${
@@ -137,7 +140,7 @@ export default function Navbar() {
               </Link>
 
               <Link
-                href="/signup"
+                href="/register"
                 onClick={() => setMobileMenuOpen(false)}
                 className="rounded-lg bg-emerald-500 px-5 py-2.5 text-center text-sm font-semibold text-white hover:bg-emerald-600"
               >
