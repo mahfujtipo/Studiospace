@@ -1,10 +1,9 @@
-// src/app/login/page.tsx
-
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { authClient } from "@/lib/auth-client";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -15,23 +14,47 @@ export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage("");
     setSuccessMessage("");
 
-    if (!email || !password) {
+    if (!email.trim() || !password) {
       setErrorMessage("Please fill in all required fields.");
       return;
     }
 
-    setIsLoading(true);
-
-    // Frontend simulation of sign-in action
-    setTimeout(() => {
+    try {
+      await authClient.signIn.email(
+        {
+          email: email.trim(),
+          password,
+          rememberMe,
+          callbackURL: "/",
+        },
+        {
+          onRequest: () => {
+            setIsLoading(true);
+            setErrorMessage("");
+            setSuccessMessage("");
+          },
+          onSuccess: () => {
+            setSuccessMessage("Sign in successful!");
+          },
+          onError: (ctx) => {
+            setErrorMessage(ctx.error.message);
+          },
+        },
+      );
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
+    } finally {
       setIsLoading(false);
-      setSuccessMessage("Sign in successful! (Frontend demo mode)");
-    }, 1200);
+    }
   };
 
   return (
@@ -95,7 +118,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Footer info (new Date() সরিয়ে স্ট্যাটিক ২০২৬ করা হলো) */}
+        {/* Footer info */}
         <div className="relative z-10 text-xs text-gray-400">
           © 2026 StudioSpace Marketplace. All rights reserved.
         </div>

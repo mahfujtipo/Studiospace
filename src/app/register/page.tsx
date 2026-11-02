@@ -1,13 +1,13 @@
-// src/app/register/page.tsx
-
 "use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { authClient } from "@/lib/auth-client";
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
+  const [photoURL, setPhotoURL] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -16,6 +16,7 @@ export default function RegisterPage() {
   const [agreeTerms, setAgreeTerms] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [currentYear, setCurrentYear] = useState("2026");
@@ -26,7 +27,9 @@ export default function RegisterPage() {
 
   // Validation checks
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isLengthValid = password.length >= 6;
+  const isPhotoURLValid =
+    photoURL.trim() === "" || /^https?:\/\/.+/i.test(photoURL.trim());
+  const isLengthValid = password.length >= 8;
   const hasUppercase = /[A-Z]/.test(password);
   const hasLowercase = /[a-z]/.test(password);
   const isPasswordMatch = password === confirmPassword && password.length > 0;
@@ -34,14 +37,16 @@ export default function RegisterPage() {
   const isFormValid =
     fullName.trim() !== "" &&
     isEmailValid &&
+    isPhotoURLValid &&
     isLengthValid &&
     hasUppercase &&
     hasLowercase &&
     isPasswordMatch &&
     agreeTerms;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     setErrorMessage("");
     setSuccessMessage("");
 
@@ -52,13 +57,67 @@ export default function RegisterPage() {
       return;
     }
 
-    setIsLoading(true);
+    try {
+      await authClient.signUp.email(
+        {
+          email: email.trim(),
+          password,
+          name: fullName.trim(),
+          image: photoURL.trim() || undefined,
+          callbackURL: "/dashboard",
+        },
+        {
+          onRequest: () => {
+            setIsLoading(true);
+            setErrorMessage("");
+            setSuccessMessage("");
+          },
+          onSuccess: () => {
+            setSuccessMessage("Account created successfully!");
 
-    // Frontend simulation of registration action
-    setTimeout(() => {
+            // Clear form after successful registration
+            setFullName("");
+            setPhotoURL("");
+            setEmail("");
+            setPassword("");
+            setConfirmPassword("");
+            setAgreeTerms(false);
+          },
+          onError: (ctx) => {
+            setErrorMessage(ctx.error.message);
+          },
+        },
+      );
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
+    } finally {
       setIsLoading(false);
-      setSuccessMessage("Account created successfully! (Frontend demo mode)");
-    }, 1200);
+    }
+  };
+
+  // Google Sign Up Handler
+  const handleGoogleSignUp = async () => {
+    setErrorMessage("");
+    setSuccessMessage("");
+    setIsGoogleLoading(true);
+
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/",
+      });
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Google sign up failed. Please try again.",
+      );
+      setIsGoogleLoading(false);
+    }
   };
 
   return (
@@ -161,12 +220,36 @@ export default function RegisterPage() {
               </label>
               <input
                 type="text"
+                name="fullName"
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Mahafujul Alam Tipo"
                 className="w-full px-4 py-3 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all shadow-sm"
               />
+            </div>
+
+            {/* Optional Profile Photo URL */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 uppercase tracking-wider mb-1.5">
+                Profile Photo URL{" "}
+                <span className="normal-case text-gray-400 font-normal">
+                  (Optional)
+                </span>
+              </label>
+              <input
+                type="url"
+                name="photoURL"
+                value={photoURL}
+                onChange={(e) => setPhotoURL(e.target.value)}
+                placeholder="https://example.com/profile.jpg"
+                className="w-full px-4 py-3 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all shadow-sm"
+              />
+              {!isPhotoURLValid && (
+                <p className="text-[11px] text-red-500 mt-1">
+                  Please enter a valid HTTP or HTTPS image URL.
+                </p>
+              )}
             </div>
 
             {/* Email Address */}
@@ -176,6 +259,7 @@ export default function RegisterPage() {
               </label>
               <input
                 type="email"
+                name="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -192,6 +276,7 @@ export default function RegisterPage() {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
+                  name="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -216,7 +301,7 @@ export default function RegisterPage() {
                       : "text-gray-400"
                   }
                 >
-                  ✓ At least 6 characters
+                  ✓ At least 8 characters
                 </span>
                 <span
                   className={
@@ -247,6 +332,7 @@ export default function RegisterPage() {
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -273,6 +359,8 @@ export default function RegisterPage() {
               <label className="flex items-start gap-2.5 cursor-pointer">
                 <input
                   type="checkbox"
+                  name="agreeTerms"
+                  value="true"
                   required
                   checked={agreeTerms}
                   onChange={(e) => setAgreeTerms(e.target.checked)}
@@ -295,7 +383,7 @@ export default function RegisterPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading || !isFormValid}
+              disabled={isLoading || isGoogleLoading || !isFormValid}
               className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm transition-all shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 disabled:opacity-50 mt-2"
             >
               {isLoading ? (
@@ -316,7 +404,7 @@ export default function RegisterPage() {
                     <path
                       className="opacity-75"
                       fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0v3c0 3.042 1.135 5.824 3 7.938l-2.647z"
                     ></path>
                   </svg>
                   Creating account...
@@ -339,31 +427,59 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Google Sign Up Button (UI only) */}
+          {/* Google Sign Up Button */}
           <button
             type="button"
-            onClick={() => alert("Google Sign Up demo (backend not connected)")}
-            className="w-full py-3 px-4 rounded-xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-200 font-semibold text-sm hover:bg-gray-50 dark:hover:bg-zinc-800/80 transition-all flex items-center justify-center gap-3 shadow-sm"
+            onClick={handleGoogleSignUp}
+            disabled={isGoogleLoading || isLoading}
+            className="w-full py-3 px-4 rounded-xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-200 font-semibold text-sm hover:bg-gray-50 dark:hover:bg-zinc-800/80 transition-all flex items-center justify-center gap-3 shadow-sm disabled:opacity-50"
           >
-            <svg className="w-4 h-4" viewBox="0 0 24 24">
-              <path
-                fill="#4285F4"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-              />
-            </svg>
-            Sign up with Google
+            {isGoogleLoading ? (
+              <>
+                <svg
+                  className="animate-spin h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+                Connecting to Google...
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" viewBox="0 0 24 24">
+                  <path
+                    fill="#4285F4"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 2.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                  />
+                </svg>
+                Sign up with Google
+              </>
+            )}
           </button>
 
           {/* Bottom Redirect */}
