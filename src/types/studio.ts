@@ -7,10 +7,11 @@ export interface Studio {
   maxCapacity: number;
   location: string;
   imageUrl: string;
-  amenities: string[];
+  amenities?: string[];
   overview: string;
   ownerName: string;
   ownerEmail: string;
+  status?: string;
   createdAt?: string;
   updatedAt?: string;
 }

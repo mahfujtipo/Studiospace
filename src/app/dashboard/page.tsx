@@ -3,8 +3,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
 
 export default function DashboardOverviewPage() {
+  const { data: session } = authClient.useSession();
+
   const [totalStudios, setTotalStudios] = useState<number>(0);
   const [totalBookings, setTotalBookings] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -14,7 +17,7 @@ export default function DashboardOverviewPage() {
       try {
         setIsLoading(true);
 
-        // Fetch user email or assume host context. Fetching total spaces.
+        // ১. টোটাল স্টুডিও বা স্পেস ফেচ করা
         const resSpaces = await fetch("http://localhost:8000/spaces", {
           cache: "no-store",
         });
@@ -26,13 +29,15 @@ export default function DashboardOverviewPage() {
           setTotalStudios(list.length);
         }
 
-        // Fetch bookings associated with user email
-        const resBookings = await fetch(
-          "http://localhost:8000/bookings/my-bookings",
-          {
-            cache: "no-store",
-          },
-        );
+        // ২. লগইন করা ইউজারের ইমেইল পাস করে তার আন্ডারে বুকিংগুলো ফেচ করা
+        const userEmail = session?.user?.email;
+        const bookingsUrl = userEmail
+          ? `http://localhost:8000/bookings/my-bookings?email=${encodeURIComponent(userEmail)}`
+          : "http://localhost:8000/bookings/my-bookings";
+
+        const resBookings = await fetch(bookingsUrl, {
+          cache: "no-store",
+        });
         if (resBookings.ok) {
           const bookingsData = await resBookings.json();
           const bookingsList = Array.isArray(bookingsData) ? bookingsData : [];
@@ -46,7 +51,7 @@ export default function DashboardOverviewPage() {
     }
 
     fetchDashboardMetrics();
-  }, []);
+  }, [session?.user?.email]);
 
   return (
     <div className="space-y-8 animate-fadeIn">
@@ -59,7 +64,7 @@ export default function DashboardOverviewPage() {
             Host Control Center
           </div>
           <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3">
-            Welcome back to StudioSpace
+            Welcome back, {session?.user?.name || "Creator"}!
           </h2>
           <p className="text-emerald-100/80 text-sm sm:text-base leading-relaxed mb-6">
             Here is a live summary of your creative spaces and booking
@@ -136,7 +141,8 @@ export default function DashboardOverviewPage() {
             </span>
           </div>
           <p className="text-xs text-gray-500 dark:text-zinc-400 mt-3 leading-relaxed">
-            Total number of bookings associated with your registered email.
+            Total number of bookings associated with your registered email (
+            {session?.user?.email || "Guest"}).
           </p>
         </div>
       </div>

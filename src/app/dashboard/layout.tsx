@@ -1,3 +1,4 @@
+// src/app/dashboard/layout.tsx
 "use client";
 
 import { useState } from "react";
@@ -74,8 +75,8 @@ export default function DashboardLayout({
           />
         </svg>
       ),
-      active: false,
-      isPlaceholder: true,
+      active: pathname === "/dashboard/add-studio",
+      isPlaceholder: false, // <--- সচল করা হলো
     },
     {
       name: "My Studio Listings",
@@ -95,12 +96,12 @@ export default function DashboardLayout({
           />
         </svg>
       ),
-      active: false,
-      isPlaceholder: true,
+      active: pathname === "/dashboard/my-studios",
+      isPlaceholder: false, // <--- প্লেসহোল্ডার উঠিয়ে সচল করা হলো
     },
     {
       name: "My Bookings",
-      href: "/dashboard/my-bookings",
+      href: "/dashboard/bookings",
       icon: (
         <svg
           className="w-5 h-5 shrink-0"
@@ -116,8 +117,8 @@ export default function DashboardLayout({
           />
         </svg>
       ),
-      active: false,
-      isPlaceholder: true,
+      active: pathname === "/dashboard/bookings",
+      isPlaceholder: false, // <--- সচল করা হলো
     },
   ];
 

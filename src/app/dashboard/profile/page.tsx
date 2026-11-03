@@ -3,22 +3,34 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { authClient } from "@/lib/auth-client";
+import UpdateProfileModal from "@/components/UpdateProfileModal";
 
 export default function ProfilePage() {
-  // আপনার ইউজার তথ্য (ইমেজ না থাকলে বা খালি স্ট্রিং "" দিলে প্রথম অক্ষর দেখাবে)
+  const { data: session, isPending, refetch } = authClient.useSession();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
+
   const user = {
-    name: "Mahafujul Alam Tipo",
-    email: "creator@example.com",
-    avatar: "", // টেস্ট করার জন্য খালি রাখা হয়েছে, ইমেজ URL দিলেও এরর হলে নাম দেখাবে
+    name: session?.user?.name || "User",
+    email: session?.user?.email || "",
+    avatar: session?.user?.image || "",
     role: "Studio Host & Creator",
   };
 
-  const [imgError, setImgError] = useState(false);
-
-  // নামের প্রথম অক্ষর বের করা
   const firstLetter = user.name ? user.name.charAt(0).toUpperCase() : "U";
-
   const showFallback = imgError || !user.avatar;
+
+  if (isPending) {
+    return (
+      <div className="text-center py-20">
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent"></div>
+        <p className="text-sm text-gray-500 dark:text-zinc-400 mt-3">
+          Loading profile...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
@@ -58,16 +70,18 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Back and Update Buttons */}
+          {/* Action Buttons */}
           <div className="flex items-center gap-3 w-full sm:w-auto justify-center">
             <button
               type="button"
+              onClick={() => window.history.back()}
               className="px-5 py-2.5 rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-200 text-xs font-semibold hover:bg-gray-200 transition-colors border border-gray-200 dark:border-zinc-700"
             >
               Back
             </button>
             <button
               type="button"
+              onClick={() => setIsModalOpen(true)}
               className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors shadow-lg shadow-emerald-600/20"
             >
               Update
@@ -120,6 +134,17 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Update Profile Modal Component */}
+      <UpdateProfileModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        user={user}
+        onSuccess={() => {
+          setImgError(false);
+          if (refetch) refetch();
+        }}
+      />
     </div>
   );
 }

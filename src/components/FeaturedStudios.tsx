@@ -1,7 +1,6 @@
-// components/FeaturedStudios.tsx
-
 import Image from "next/image";
 import Link from "next/link";
+import { connection } from "next/server";
 
 export interface Studio {
   _id: string;
@@ -59,6 +58,8 @@ async function getFeaturedStudios(): Promise<{
 }
 
 export default async function FeaturedStudios() {
+  await connection();
+
   const { studios, error } = await getFeaturedStudios();
 
   return (

@@ -32,7 +32,7 @@ const menuLinks = [
   },
   {
     name: "My Bookings",
-    href: "/dashboard/my-bookings",
+    href: "/dashboard/bookings",
     icon: "calendar",
     description: "View your reservations",
   },
