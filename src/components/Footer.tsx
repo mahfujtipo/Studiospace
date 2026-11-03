@@ -10,7 +10,6 @@ export default function Footer() {
   const [currentYear, setCurrentYear] = useState<number>(2026);
 
   useEffect(() => {
-    // Ensures the date is evaluated safely on the client/hydration phase
     setCurrentYear(new Date().getFullYear());
   }, []);
 
@@ -39,13 +38,19 @@ export default function Footer() {
     <footer className="bg-gray-950 text-gray-300 border-t border-gray-800/80">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-10">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-5">
-          {/* 1. Branding & Mission Statement Section */}
           <div className="lg:col-span-2 flex flex-col gap-5">
             <Link
               href="/"
-              className="text-2xl font-bold text-white tracking-tight"
+              className="flex items-center gap-2.5 text-2xl font-bold text-white tracking-tight"
             >
-              StudioSpace
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.78L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                </svg>
+              </div>
+              <span>
+                Studio<span className="text-emerald-400">Space</span>
+              </span>
             </Link>
             <p className="text-sm leading-6 text-gray-400 max-w-sm">
               The premier marketplace to discover, book, and list inspiring
@@ -59,7 +64,6 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* 2. Quick Links */}
           <div className="flex flex-col gap-4">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
               Quick Links
@@ -75,7 +79,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/explore"
+                  href="/studios"
                   className="text-gray-400 hover:text-emerald-400 transition-colors"
                 >
                   Explore Studios
@@ -100,7 +104,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* 3. Studio Categories */}
           <div className="flex flex-col gap-4">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
               Studio Categories
@@ -108,7 +111,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-3 text-sm">
               <li>
                 <Link
-                  href="/explore?category=photography"
+                  href="/studios?category=photography"
                   className="text-gray-400 hover:text-emerald-400 transition-colors"
                 >
                   Photography Studios
@@ -116,7 +119,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/explore?category=film-video"
+                  href="/studios?category=film-video"
                   className="text-gray-400 hover:text-emerald-400 transition-colors"
                 >
                   Film & Video Studios
@@ -124,7 +127,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/explore?category=podcast"
+                  href="/studios?category=podcast"
                   className="text-gray-400 hover:text-emerald-400 transition-colors"
                 >
                   Podcast Rooms
@@ -132,7 +135,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/explore?category=music"
+                  href="/studios?category=music"
                   className="text-gray-400 hover:text-emerald-400 transition-colors"
                 >
                   Music Studios
@@ -140,7 +143,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/explore?category=workshops"
+                  href="/studios?category=workshops"
                   className="text-gray-400 hover:text-emerald-400 transition-colors"
                 >
                   Creative Workshops
@@ -149,7 +152,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* 4. Newsletter Subscription */}
           <div className="flex flex-col gap-4 lg:col-span-1">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
               Stay Inspired
@@ -191,23 +193,21 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar: Copyright & Social Media Links */}
         <div className="mt-12 flex flex-col items-center justify-between gap-6 border-t border-gray-800/80 pt-8 sm:flex-row">
           <p className="text-xs text-gray-500">
             © {currentYear} StudioSpace, Inc. All rights reserved.
           </p>
 
-          {/* Social Media Icons */}
           <div className="flex items-center gap-5">
             <a
-              href="https://facebook.com"
+              href="https://x.com"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Facebook"
+              aria-label="X (Twitter)"
               className="text-gray-400 hover:text-emerald-400 transition-colors"
             >
-              <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
-                <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
+              <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
             </a>
 

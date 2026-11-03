@@ -41,18 +41,24 @@ export default function Navbar() {
       }`}
     >
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-        {/* Logo */}
         <Link
           href="/"
-          className={`group text-2xl font-bold tracking-tight transition-colors ${
+          className={`group flex items-center gap-2.5 text-2xl font-bold tracking-tight transition-colors ${
             isTransparent ? "text-white" : "text-[#25233A]"
           }`}
         >
-          Studio<span className="text-emerald-500">Space</span>
-          <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 transition-transform group-hover:scale-150" />
+          <div
+            className={`flex h-10 w-10 items-center justify-center rounded-xl border transition-colors ${isTransparent ? "border-white/20 bg-white/10 text-white" : "border-emerald-500/20 bg-emerald-50 text-emerald-600"}`}
+          >
+            <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.78L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+            </svg>
+          </div>
+          <span>
+            Studio<span className="text-emerald-500">Space</span>
+          </span>
         </Link>
 
-        {/* Desktop Navigation */}
         <div className="hidden items-center gap-1 rounded-full border border-current/10 bg-current/[0.03] p-1 md:flex">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
@@ -77,12 +83,10 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Desktop Authentication */}
         <div className="hidden items-center md:flex">
           <AuthMenu isTransparent={isTransparent} />
         </div>
 
-        {/* Mobile Menu Button */}
         <button
           type="button"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -98,7 +102,6 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div
           className={`border-t px-6 py-6 backdrop-blur-xl md:hidden ${
@@ -108,7 +111,6 @@ export default function Navbar() {
           }`}
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-5">
-            {/* Mobile Navigation Links */}
             <div className="flex flex-col gap-1">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
@@ -130,7 +132,6 @@ export default function Navbar() {
               })}
             </div>
 
-            {/* Mobile Authentication */}
             <div className="border-t border-current/10 pt-5">
               <AuthMenu mobile onNavigate={() => setMobileMenuOpen(false)} />
             </div>

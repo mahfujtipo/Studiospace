@@ -6,6 +6,17 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+const availableAmenities = [
+  "Wi-Fi",
+  "Air Conditioning",
+  "Sound System",
+  "Professional Lighting",
+  "Green Screen",
+  "Makeup Room",
+  "Parking Space",
+  "Restroom",
+];
+
 export default function AddStudioPage() {
   const { data: session } = authClient.useSession();
   const router = useRouter();
@@ -21,6 +32,7 @@ export default function AddStudioPage() {
     image: "",
   });
 
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -32,6 +44,14 @@ export default function AddStudioPage() {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAmenityToggle = (amenity: string) => {
+    setSelectedAmenities((prev) =>
+      prev.includes(amenity)
+        ? prev.filter((item) => item !== amenity)
+        : [...prev, amenity],
+    );
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -53,6 +73,7 @@ export default function AddStudioPage() {
         },
         body: JSON.stringify({
           ...formData,
+          amenities: selectedAmenities,
           userEmail: session.user.email,
           userName: session.user.name || "Host",
         }),
@@ -64,7 +85,7 @@ export default function AddStudioPage() {
         throw new Error(data.message || "Failed to add studio.");
       }
 
-      setSuccessMessage("Studio added successfully!");
+      setSuccessMessage("Studio added successfully! Redirecting...");
       setTimeout(() => {
         router.push("/dashboard/my-studios");
       }, 1500);
@@ -180,7 +201,7 @@ export default function AddStudioPage() {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-2">
-                Price Per Hour (৳) *
+                Price Per Hour ($) *
               </label>
               <input
                 type="number"
@@ -189,14 +210,14 @@ export default function AddStudioPage() {
                 min="0"
                 value={formData.pricePerHour}
                 onChange={handleChange}
-                placeholder="e.g. 1500"
+                placeholder="e.g. 50"
                 className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-2">
-                Security Deposit (৳)
+                Security Deposit ($)
               </label>
               <input
                 type="number"
@@ -204,7 +225,7 @@ export default function AddStudioPage() {
                 min="0"
                 value={formData.securityDeposit}
                 onChange={handleChange}
-                placeholder="e.g. 500"
+                placeholder="e.g. 100"
                 className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
@@ -234,7 +255,7 @@ export default function AddStudioPage() {
                 required
                 value={formData.location}
                 onChange={handleChange}
-                placeholder="e.g. GEC, Chattogram"
+                placeholder="e.g. Downtown, Los Angeles"
                 className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
@@ -252,6 +273,33 @@ export default function AddStudioPage() {
               placeholder="https://example.com/studio-image.jpg"
               className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
+          </div>
+
+          {/* Amenities Checkboxes */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-2">
+              Amenities List (Select features)
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {availableAmenities.map((amenity) => (
+                <label
+                  key={amenity}
+                  className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs font-medium cursor-pointer transition-all ${
+                    selectedAmenities.includes(amenity)
+                      ? "bg-emerald-500/10 border-emerald-500 text-emerald-600 dark:text-emerald-400"
+                      : "bg-gray-50 dark:bg-zinc-800/50 border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-zinc-300"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedAmenities.includes(amenity)}
+                    onChange={() => handleAmenityToggle(amenity)}
+                    className="w-4 h-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                  />
+                  <span>{amenity}</span>
+                </label>
+              ))}
+            </div>
           </div>
 
           <div>

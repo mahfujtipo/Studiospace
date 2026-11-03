@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 
@@ -17,6 +18,12 @@ const menuLinks = [
     href: "/dashboard",
     icon: "dashboard",
     description: "Overview of your account",
+  },
+  {
+    name: "My Profile",
+    href: "/dashboard/profile",
+    icon: "user",
+    description: "View and edit your profile",
   },
   {
     name: "Add New Studio",
@@ -57,6 +64,14 @@ function MenuIcon({ type }: { type: string }) {
           <rect x="13" y="3" width="8" height="5" rx="2" />
           <rect x="13" y="10" width="8" height="11" rx="2" />
           <rect x="3" y="13" width="8" height="8" rx="2" />
+        </svg>
+      );
+
+    case "user":
+      return (
+        <svg {...commonProps}>
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
         </svg>
       );
 
@@ -209,12 +224,14 @@ export default function AuthMenu({
         }`}
       >
         <span className="rounded-full bg-gradient-to-tr from-emerald-400 via-green-500 to-teal-400 p-[2px] shadow-md shadow-emerald-500/20 transition-transform duration-300 group-hover:scale-105">
-          <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-emerald-50 text-sm font-bold text-emerald-700">
+          <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-emerald-50 text-sm font-bold text-emerald-700">
             {userImage && !imageError ? (
-              <img
+              <Image
                 src={userImage}
                 alt={userName}
-                className="h-full w-full object-cover"
+                fill
+                sizes="40px"
+                className="object-cover"
                 onError={() => setImageError(true)}
               />
             ) : (
@@ -274,12 +291,14 @@ export default function AuthMenu({
 
             <div className="relative flex items-center gap-3">
               <div className="rounded-full bg-white/20 p-[3px]">
-                <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border-2 border-white/70 bg-white text-base font-bold text-emerald-700">
+                <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border-2 border-white/70 bg-white text-base font-bold text-emerald-700">
                   {userImage && !imageError ? (
-                    <img
+                    <Image
                       src={userImage}
                       alt={userName}
-                      className="h-full w-full object-cover"
+                      fill
+                      sizes="48px"
+                      className="object-cover"
                       onError={() => setImageError(true)}
                     />
                   ) : (

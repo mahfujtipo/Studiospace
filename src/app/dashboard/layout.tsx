@@ -1,15 +1,11 @@
 // src/app/dashboard/layout.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
@@ -76,7 +72,7 @@ export default function DashboardLayout({
         </svg>
       ),
       active: pathname === "/dashboard/add-studio",
-      isPlaceholder: false, // <--- সচল করা হলো
+      isPlaceholder: false,
     },
     {
       name: "My Studio Listings",
@@ -97,7 +93,7 @@ export default function DashboardLayout({
         </svg>
       ),
       active: pathname === "/dashboard/my-studios",
-      isPlaceholder: false, // <--- প্লেসহোল্ডার উঠিয়ে সচল করা হলো
+      isPlaceholder: false,
     },
     {
       name: "My Bookings",
@@ -118,13 +114,12 @@ export default function DashboardLayout({
         </svg>
       ),
       active: pathname === "/dashboard/bookings",
-      isPlaceholder: false, // <--- সচল করা হলো
+      isPlaceholder: false,
     },
   ];
 
   return (
     <div className="min-h-[calc(100vh-80px)] mt-20 bg-gray-50 dark:bg-zinc-950 flex flex-col lg:flex-row text-gray-900 dark:text-zinc-100 relative">
-      {/* Mobile Header Toggle Bar */}
       <div className="lg:hidden flex items-center justify-between px-6 py-4 bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 sticky top-20 z-30">
         <div className="flex items-center gap-2">
           <span className="font-bold text-lg text-emerald-600 dark:text-emerald-400">
@@ -171,7 +166,6 @@ export default function DashboardLayout({
         </button>
       </div>
 
-      {/* Mobile Drawer Overlay */}
       {mobileOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity"
@@ -179,7 +173,6 @@ export default function DashboardLayout({
         />
       )}
 
-      {/* Collapsible Sidebar */}
       <aside
         className={`
           fixed lg:sticky top-20 z-50 h-[calc(100vh-80px)] bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 
@@ -189,7 +182,6 @@ export default function DashboardLayout({
         `}
       >
         <div>
-          {/* Sidebar Header / Collapse Toggle */}
           <div className="p-4 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-between">
             {!collapsed && (
               <div className="flex items-center gap-2.5">
@@ -243,7 +235,6 @@ export default function DashboardLayout({
             </button>
           </div>
 
-          {/* Navigation Items */}
           <nav className="p-3 space-y-1.5">
             {navItems.map((item) => {
               return item.isPlaceholder ? (
@@ -304,7 +295,6 @@ export default function DashboardLayout({
           </nav>
         </div>
 
-        {/* Bottom Back to Website Link */}
         <div className="p-3 border-t border-gray-100 dark:border-zinc-800">
           <Link
             href="/"
@@ -332,9 +322,7 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Dashboard Header */}
         <header className="bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 px-6 py-4 sticky top-20 lg:top-20 z-20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-zinc-400 mb-1">
@@ -372,11 +360,28 @@ export default function DashboardLayout({
           </div>
         </header>
 
-        {/* Page Content */}
         <main className="flex-1 p-6 sm:p-8 max-w-7xl w-full mx-auto space-y-8">
           {children}
         </main>
       </div>
     </div>
+  );
+}
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-zinc-950">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent"></div>
+        </div>
+      }
+    >
+      <DashboardLayoutContent>{children}</DashboardLayoutContent>
+    </Suspense>
   );
 }

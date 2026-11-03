@@ -81,24 +81,25 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white dark:bg-zinc-950 pt-20">
-      {/* Left Side: Branding & Creative Showcase */}
-      <div className="hidden lg:relative lg:flex flex-col justify-between bg-zinc-900 text-white p-12 overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-40">
+      {/* Left Side: Different Clean Studio Image with Soft Whitish/Light View */}
+      <div className="hidden lg:relative lg:flex flex-col justify-between bg-gray-50 text-gray-900 p-12 overflow-hidden border-r border-gray-100 dark:border-zinc-800">
+        <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=80"
-            alt="Studio Space Background"
+            src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=1200&q=80"
+            alt="Clean Whitish Login Studio Background"
             fill
             priority
-            className="object-cover"
+            className="object-cover opacity-90"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-900/60 to-transparent z-0" />
+        {/* Soft whitish overlay to keep it bright and clean */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/90 via-white/70 to-white/40 dark:from-zinc-950/90 dark:via-zinc-900/70 dark:to-transparent z-0" />
 
         {/* Top Branding Header */}
         <div className="relative z-10">
           <Link
             href="/"
-            className="text-2xl font-bold tracking-tight text-white flex items-center gap-2"
+            className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center gap-2"
           >
             <span className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white text-sm font-black">
               S
@@ -108,14 +109,14 @@ export default function LoginPage() {
         </div>
 
         {/* Center Content */}
-        <div className="relative z-10 max-w-md my-auto py-12">
-          <span className="inline-block text-emerald-400 font-semibold text-xs tracking-widest uppercase mb-3 bg-emerald-950/80 border border-emerald-800/80 px-3.5 py-1 rounded-full">
+        <div className="relative z-10 max-w-md my-auto py-12 text-gray-900 dark:text-white">
+          <span className="inline-block text-emerald-600 dark:text-emerald-400 font-semibold text-xs tracking-widest uppercase mb-3 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800/80 px-3.5 py-1 rounded-full">
             WELCOME BACK
           </span>
           <h1 className="text-3xl xl:text-4xl font-extrabold tracking-tight mb-4 leading-tight">
             Your next creative space is just a few clicks away.
           </h1>
-          <p className="text-gray-300 text-sm leading-relaxed mb-8">
+          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-8">
             Access your active reservations, saved creative spots, and manage
             your production bookings seamlessly.
           </p>
@@ -129,9 +130,9 @@ export default function LoginPage() {
             ].map((benefit, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-3 text-sm text-gray-200"
+                className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200"
               >
-                <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">
                   ✓
                 </div>
                 <span>{benefit}</span>
@@ -141,13 +142,13 @@ export default function LoginPage() {
         </div>
 
         {/* Footer info */}
-        <div className="relative z-10 text-xs text-gray-400">
+        <div className="relative z-10 text-xs text-gray-500 dark:text-gray-400">
           © 2026 StudioSpace Marketplace. All rights reserved.
         </div>
       </div>
 
       {/* Right Side: Sign In Form */}
-      <div className="flex flex-col justify-center px-6 sm:px-12 md:px-20 py-12 lg:py-16 bg-gray-50 dark:bg-zinc-950">
+      <div className="flex flex-col justify-center px-6 sm:px-12 md:px-20 py-12 lg:py-16 bg-white dark:bg-zinc-950">
         <div className="max-w-md w-full mx-auto">
           <div className="mb-8">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-2">
@@ -183,7 +184,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="creator@example.com"
-                className="w-full px-4 py-3 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all shadow-sm"
+                className="w-full px-4 py-3 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all shadow-sm"
               />
             </div>
 
@@ -208,7 +209,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all shadow-sm pr-12"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all shadow-sm pr-12"
                 />
                 <button
                   type="button"
@@ -276,7 +277,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-gray-200 dark:border-zinc-800" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-gray-50 dark:bg-zinc-950 px-2 text-gray-400">
+              <span className="bg-white dark:bg-zinc-950 px-2 text-gray-400">
                 Or continue with
               </span>
             </div>

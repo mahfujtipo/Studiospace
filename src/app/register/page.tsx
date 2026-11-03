@@ -3,9 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 
 export default function RegisterPage() {
+  const router = useRouter();
+
   const [fullName, setFullName] = useState("");
   const [photoURL, setPhotoURL] = useState("");
   const [email, setEmail] = useState("");
@@ -29,7 +32,7 @@ export default function RegisterPage() {
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isPhotoURLValid =
     photoURL.trim() === "" || /^https?:\/\/.+/i.test(photoURL.trim());
-  const isLengthValid = password.length >= 8;
+  const isLengthValid = password.length >= 6;
   const hasUppercase = /[A-Z]/.test(password);
   const hasLowercase = /[a-z]/.test(password);
   const isPasswordMatch = password === confirmPassword && password.length > 0;
@@ -64,7 +67,6 @@ export default function RegisterPage() {
           password,
           name: fullName.trim(),
           image: photoURL.trim() || undefined,
-          callbackURL: "/dashboard",
         },
         {
           onRequest: () => {
@@ -73,15 +75,10 @@ export default function RegisterPage() {
             setSuccessMessage("");
           },
           onSuccess: () => {
-            setSuccessMessage("Account created successfully!");
-
-            // Clear form after successful registration
-            setFullName("");
-            setPhotoURL("");
-            setEmail("");
-            setPassword("");
-            setConfirmPassword("");
-            setAgreeTerms(false);
+            setSuccessMessage("Account created successfully! Redirecting...");
+            setTimeout(() => {
+              router.push("/login");
+            }, 1000);
           },
           onError: (ctx) => {
             setErrorMessage(ctx.error.message);
@@ -122,24 +119,24 @@ export default function RegisterPage() {
 
   return (
     <main className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white dark:bg-zinc-950 pt-20">
-      {/* Left Side: Branding & Community Showcase */}
+      {/* Left Side: Simple Clean Studio Image with White/Light View */}
       <div className="hidden lg:relative lg:flex flex-col justify-between bg-zinc-900 text-white p-12 overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-40">
+        <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80"
-            alt="Creative Community Studio"
+            src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80"
+            alt="Creative Studio Register Background"
             fill
             priority
-            className="object-cover"
+            className="object-cover opacity-85"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-900/60 to-transparent z-0" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/95 via-white/70 to-transparent dark:from-zinc-950/95 dark:via-zinc-900/70 z-0" />
 
         {/* Top Branding Header */}
         <div className="relative z-10">
           <Link
             href="/"
-            className="text-2xl font-bold tracking-tight text-white flex items-center gap-2"
+            className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center gap-2"
           >
             <span className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white text-sm font-black">
               S
@@ -149,14 +146,14 @@ export default function RegisterPage() {
         </div>
 
         {/* Center Content */}
-        <div className="relative z-10 max-w-md my-auto py-12">
-          <span className="inline-block text-emerald-400 font-semibold text-xs tracking-widest uppercase mb-3 bg-emerald-950/80 border border-emerald-800/80 px-3.5 py-1 rounded-full">
+        <div className="relative z-10 max-w-md my-auto py-12 text-gray-900 dark:text-white">
+          <span className="inline-block text-emerald-600 dark:text-emerald-400 font-semibold text-xs tracking-widest uppercase mb-3 bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-800/80 px-3.5 py-1 rounded-full">
             JOIN THE COMMUNITY
           </span>
           <h1 className="text-3xl xl:text-4xl font-extrabold tracking-tight mb-4 leading-tight">
             Discover inspiring spaces and bring creative ideas to life.
           </h1>
-          <p className="text-gray-300 text-sm leading-relaxed mb-8">
+          <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-8">
             Whether you are booking your next production stage or listing your
             own creative studio, StudioSpace makes collaboration effortless.
           </p>
@@ -170,9 +167,9 @@ export default function RegisterPage() {
             ].map((benefit, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-3 text-sm text-gray-200"
+                className="flex items-center gap-3 text-sm text-gray-800 dark:text-gray-200"
               >
-                <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">
                   ✓
                 </div>
                 <span>{benefit}</span>
@@ -182,7 +179,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Footer info */}
-        <div className="relative z-10 text-xs text-gray-400">
+        <div className="relative z-10 text-xs text-gray-600 dark:text-gray-400">
           © {currentYear} StudioSpace Marketplace. All rights reserved.
         </div>
       </div>
@@ -301,7 +298,7 @@ export default function RegisterPage() {
                       : "text-gray-400"
                   }
                 >
-                  ✓ At least 8 characters
+                  ✓ At least 6 characters
                 </span>
                 <span
                   className={
@@ -452,7 +449,7 @@ export default function RegisterPage() {
                   <path
                     className="opacity-75"
                     fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 1 5.373 1 12h4z"
                   />
                 </svg>
                 Connecting to Google...
@@ -474,7 +471,7 @@ export default function RegisterPage() {
                   />
                   <path
                     fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 2.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 2.47 3.99 4.94 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                   />
                 </svg>
                 Sign up with Google
