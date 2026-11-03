@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { connection } from "next/server";
 import ExploreClientView from "../../components/ExploreClientView";
 import { Studio } from "../../types/studio";
 
@@ -51,6 +52,7 @@ async function StudioContent({
     [key: string]: string | string[] | undefined;
   }>;
 }) {
+  await connection(); // ডাইনামিক রেন্ডারিং ফোর্স করার জন্য এটি যোগ করা হয়েছে
   const resolvedParams = await searchParams;
 
   const selectedCategory =
@@ -151,8 +153,6 @@ export default function ExplorePage({ searchParams }: PageProps) {
             Back to Homepage
           </Link>
         </div>
-
-        {/* Studios */}
         <Suspense fallback={<ExploreLoading />}>
           <StudioContent searchParams={searchParams} />
         </Suspense>

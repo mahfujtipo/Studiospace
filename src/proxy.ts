@@ -5,8 +5,7 @@ export function proxy(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
   const { pathname } = request.nextUrl;
 
-  // Protect dashboard routes
-  if (pathname.startsWith("/dashboard")) {
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/studios/")) {
     if (!sessionCookie) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("callbackURL", pathname);
@@ -22,5 +21,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/register"],
+  matcher: ["/dashboard/:path*", "/studios/:path*", "/login", "/register"],
 };
