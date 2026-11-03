@@ -48,7 +48,7 @@ export default function MyStudiosPage() {
     try {
       setIsLoading(true);
       const res = await fetch(
-        `http://localhost:8000/studios/my-studios?email=${encodeURIComponent(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/studios/my-studios?email=${encodeURIComponent(
           session.user.email,
         )}`,
         { cache: "no-store" },
@@ -151,7 +151,7 @@ export default function MyStudiosPage() {
     try {
       setIsDeleting(true);
       const res = await fetch(
-        `http://localhost:8000/studios/${studioToDelete}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/studios/${studioToDelete}`,
         {
           method: "DELETE",
         },

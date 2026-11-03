@@ -201,7 +201,7 @@ export default function AddStudioPage() {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-2">
-                Price Per Hour ($) *
+                Price Per Hour (৳) *
               </label>
               <input
                 type="number"
@@ -210,14 +210,14 @@ export default function AddStudioPage() {
                 min="0"
                 value={formData.pricePerHour}
                 onChange={handleChange}
-                placeholder="e.g. 50"
+                placeholder="e.g. 5000"
                 className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-zinc-300 mb-2">
-                Security Deposit ($)
+                Security Deposit (৳)
               </label>
               <input
                 type="number"
@@ -225,7 +225,7 @@ export default function AddStudioPage() {
                 min="0"
                 value={formData.securityDeposit}
                 onChange={handleChange}
-                placeholder="e.g. 100"
+                placeholder="e.g. 10000"
                 className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
@@ -255,7 +255,7 @@ export default function AddStudioPage() {
                 required
                 value={formData.location}
                 onChange={handleChange}
-                placeholder="e.g. Downtown, Los Angeles"
+                placeholder="e.g. Banani, Dhaka"
                 className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>

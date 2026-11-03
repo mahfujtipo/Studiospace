@@ -51,7 +51,7 @@ export default function MyBookingsPage() {
         setError("");
 
         const res = await fetch(
-          `http://localhost:8000/bookings/my-bookings?email=${encodeURIComponent(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings/my-bookings?email=${encodeURIComponent(
             session.user.email,
           )}`,
           { cache: "no-store" },
@@ -116,7 +116,7 @@ export default function MyBookingsPage() {
       setDeleteSuccess("");
 
       const response = await fetch(
-        `http://localhost:8000/bookings/${selectedBooking._id}?email=${encodeURIComponent(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings/${selectedBooking._id}?email=${encodeURIComponent(
           session.user.email,
         )}`,
         {
