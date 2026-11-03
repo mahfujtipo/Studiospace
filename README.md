@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# StudioSpace Backend
 
-## Getting Started
+The backend API for **StudioSpace**, a creative space rental platform where users can explore studios, list their own creative spaces, and manage studio bookings.
 
-First, run the development server:
+## Live Links
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Live Website:** https://studiospace-zeta.vercel.app
+- **Live Backend API:** https://studiospace-server-psi.vercel.app
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Technologies Used
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Node.js
+- Express.js
+- MongoDB
+- JavaScript
+- Vercel (Deployment)
+- Git & GitHub
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Features
 
-## Learn More
+- RESTful API built with Express.js.
+- MongoDB database integration.
+- Retrieve all available studios.
+- Fetch individual studio details.
+- Add new studio listings.
+- Retrieve studio listings by owner.
+- Create studio booking requests.
+- Retrieve bookings by user.
+- Delete studio listings.
+- Cancel bookings.
+- Check booking time conflicts to prevent overlapping reservations.
+- Dynamic studio availability status.
 
-To learn more about Next.js, take a look at the following resources:
+## API Endpoints
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Check backend server status |
+| GET | `/alldata` | Get all studio data |
+| GET | `/spaces` | Get available spaces |
+| GET | `/studios/:id` | Get a specific studio |
+| POST | `/studios` | Create a new studio |
+| GET | `/studios/my-studios?email=` | Get studios by owner |
+| DELETE | `/studios/:id` | Delete a studio |
+| POST | `/bookings` | Create a booking |
+| GET | `/bookings/my-bookings?email=` | Get user bookings |
+| DELETE | `/bookings/:id?email=` | Cancel a booking |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Installation and Setup
 
-## Deploy on Vercel
+### 1. Clone the Repository
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+git clone https://github.com/mahfujtipo/studiospace-server.git
+
+
+### 2. Navigate to the Project Directory
+
+cd studiospace-server
+
+
+### 3. Install Dependencies
+
+npm install
+
+### 4. Configure Environment Variables
+
+Create a `.env` file in the root directory and add:
+
+MONGODB_URI=your_mongodb_connection_string
+CLIENT_URI=http://localhost:3000
+NODE_ENV=development
+
+Replace `your_mongodb_connection_string` with your actual MongoDB connection string.
+
+### 5. Start the Development Server
+
+npm start
+
+
+The backend server will run at:
+
+http://localhost:8000
+
+## Database
+
+StudioSpace uses MongoDB to store studio listings and booking information.
+
+- **Database:** `Studiospace`
+- **Studio Collection:** `available`
+- **Booking Collection:** `bookings`
+
+## Deployment
+
+The backend is deployed on **Vercel**.
+
+- **Production Backend:** https://studiospace-server-psi.vercel.app
+
+## Frontend Repository
+
+[StudioSpace Frontend Repository](https://github.com/mahfujtipo/Studiospace)
+
+## Author
+
+**Mahfujul Alam Tipo**
+
+- GitHub: [@mahfujtipo](https://github.com/mahfujtipo)
+
+
+© 2026 StudioSpace. All rights reserved.
