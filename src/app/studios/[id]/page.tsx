@@ -11,9 +11,12 @@ async function getStudioById(
   id: string,
 ): Promise<{ studio: Studio | null; error?: string }> {
   try {
-    const res = await fetch(`http://localhost:8000/studios/${id}`, {
-      cache: "no-store",
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/studios/${id}`,
+      {
+        cache: "no-store",
+      },
+    );
 
     if (res.status === 404) {
       return { studio: null };

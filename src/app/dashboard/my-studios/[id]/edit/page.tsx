@@ -45,7 +45,9 @@ export default function EditStudioPage() {
     const fetchStudioData = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch(`http://localhost:8000/studios/${studioId}`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/studios/${studioId}`,
+        );
         const data = await res.json();
 
         if (!res.ok) {
@@ -109,18 +111,21 @@ export default function EditStudioPage() {
 
     try {
       setIsSubmitting(true);
-      const res = await fetch(`http://localhost:8000/studios/${studioId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/studios/${studioId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...formData,
+            amenities: selectedAmenities,
+            userEmail: session.user.email,
+            userName: session.user.name || "Host",
+          }),
         },
-        body: JSON.stringify({
-          ...formData,
-          amenities: selectedAmenities,
-          userEmail: session.user.email,
-          userName: session.user.name || "Host",
-        }),
-      });
+      );
 
       const data = await res.json();
 

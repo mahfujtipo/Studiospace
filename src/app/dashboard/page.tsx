@@ -17,10 +17,12 @@ export default function DashboardOverviewPage() {
       try {
         setIsLoading(true);
 
-        // ১. টোটাল স্টুডিও বা স্পেস ফেচ করা
-        const resSpaces = await fetch("http://localhost:8000/spaces", {
-          cache: "no-store",
-        });
+        const resSpaces = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/spaces`,
+          {
+            cache: "no-store",
+          },
+        );
         if (resSpaces.ok) {
           const spacesData = await resSpaces.json();
           const list = Array.isArray(spacesData)
@@ -32,8 +34,8 @@ export default function DashboardOverviewPage() {
         // ২. লগইন করা ইউজারের ইমেইল পাস করে তার আন্ডারে বুকিংগুলো ফেচ করা
         const userEmail = session?.user?.email;
         const bookingsUrl = userEmail
-          ? `http://localhost:8000/bookings/my-bookings?email=${encodeURIComponent(userEmail)}`
-          : "http://localhost:8000/bookings/my-bookings";
+          ? `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings/my-bookings?email=${encodeURIComponent(userEmail)}`
+          : `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings/my-bookings`;
 
         const resBookings = await fetch(bookingsUrl, {
           cache: "no-store",

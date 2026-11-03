@@ -8,7 +8,7 @@ async function getAllStudios(): Promise<{
   error?: string;
 }> {
   try {
-    const res = await fetch("http://localhost:8000/alldata", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/alldata`, {
       cache: "no-store",
     });
 

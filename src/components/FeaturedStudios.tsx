@@ -27,9 +27,12 @@ async function getFeaturedStudios(): Promise<{
   error?: string;
 }> {
   try {
-    const res = await fetch("http://localhost:8000/alldata?limit=6", {
-      cache: "no-store",
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/alldata?limit=6`,
+      {
+        cache: "no-store",
+      },
+    );
 
     if (!res.ok) {
       throw new Error(`Failed to fetch studios: ${res.statusText}`);

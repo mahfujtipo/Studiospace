@@ -7,7 +7,6 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function HowItWorksPage() {
-  // State for interactive FAQ accordion
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const toggleFaq = (index: number) => {
