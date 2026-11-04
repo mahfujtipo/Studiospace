@@ -17,7 +17,7 @@ interface StudioBookingCardProps {
   active: boolean;
   isDeleting: boolean;
   onDeleteClick: (booking: Booking) => void;
-  formatCurrency: (amount: number) => void | string;
+  formatCurrency: (amount: number) => string; // Fixed from 'void | string' to 'string'
 }
 
 export default function StudioBookingCard({

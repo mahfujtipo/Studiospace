@@ -15,7 +15,7 @@ interface Booking {
   duration: number;
   totalAmount: number;
   status: string;
-  createdAt: string;
+  createdAt?: string; // Made optional to prevent TS2345 type build errors
 }
 
 export default function MyBookingsPage() {
