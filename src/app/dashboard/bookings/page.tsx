@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { clientsidejwt } from "@/lib/clientsidejwt";
 import Link from "next/link";
 import StudioBookingCard from "@/components/StudioBookingCard";
 
@@ -15,7 +16,7 @@ interface Booking {
   duration: number;
   totalAmount: number;
   status: string;
-  createdAt?: string; // Made optional to prevent TS2345 type build errors
+  createdAt?: string;
 }
 
 export default function MyBookingsPage() {
@@ -51,11 +52,22 @@ export default function MyBookingsPage() {
         setIsLoading(true);
         setError("");
 
+        const token = await clientsidejwt();
+
+        if (!token) {
+          throw new Error(
+            "Authentication token not found. Please log in again.",
+          );
+        }
+
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings/my-bookings?email=${encodeURIComponent(
-            session.user.email,
-          )}`,
-          { cache: "no-store" },
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings/my-bookings`,
+          {
+            cache: "no-store",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
         );
 
         if (!res.ok) {
@@ -116,12 +128,19 @@ export default function MyBookingsPage() {
       setDeleteError("");
       setDeleteSuccess("");
 
+      const token = await clientsidejwt();
+
+      if (!token) {
+        throw new Error("Authentication token not found. Please log in again.");
+      }
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings/${selectedBooking._id}?email=${encodeURIComponent(
-          session.user.email,
-        )}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings/${selectedBooking._id}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
       );
 
@@ -139,6 +158,10 @@ export default function MyBookingsPage() {
 
       setDeleteSuccess("Booking deleted successfully.");
       setSelectedBooking(null);
+
+      setTimeout(() => {
+        setDeleteSuccess("");
+      }, 3000);
     } catch (err) {
       setDeleteError(
         err instanceof Error ? err.message : "Something went wrong.",
@@ -172,8 +195,9 @@ export default function MyBookingsPage() {
       </div>
 
       {deleteSuccess && (
-        <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-xl p-4 text-sm text-emerald-700 dark:text-emerald-400">
-          {deleteSuccess}
+        <div className="fixed bottom-6 right-6 z-[60] bg-emerald-600 text-white px-6 py-4 rounded-xl shadow-xl flex items-center gap-3 animate-fadeIn">
+          <span>✓</span>
+          <span className="text-sm font-semibold">{deleteSuccess}</span>
         </div>
       )}
 

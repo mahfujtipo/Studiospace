@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { clientsidejwt } from "@/lib/clientsidejwt";
 import { useRouter } from "next/navigation";
 
 interface BookingCardProps {
@@ -50,6 +51,16 @@ export default function BookingCard({
     };
   }, [isModalOpen]);
 
+  useEffect(() => {
+    if (!success) return;
+
+    const timeout = setTimeout(() => {
+      setSuccess("");
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [success]);
+
   const startMinutes = startTime
     ? Number(startTime.split(":")[0]) * 60 + Number(startTime.split(":")[1])
     : 0;
@@ -70,7 +81,6 @@ export default function BookingCard({
   const formatCurrency = (amount: number) =>
     `৳${Number(amount.toFixed(2)).toLocaleString("en-BD")}`;
 
-  // 🔄 সরাসরি onClick-এর মাধ্যমে হ্যান্ডেল করার ফাংশন
   const handleConfirmBookingClick = async () => {
     if (!isBookingReady || isLoading) return;
 
@@ -83,27 +93,33 @@ export default function BookingCard({
     setError("");
     setSuccess("");
 
-    const bookingPayload = {
-      studioId,
-      bookingDate: date,
-      startTime,
-      endTime,
-      duration,
-      hourlyRate,
-      securityDeposit,
-      totalAmount: totalPrice,
-      userId: session.user.id,
-      userName: session.user.name,
-      userEmail: session.user.email,
-    };
-
     try {
+      const token = await clientsidejwt();
+
+      if (!token) {
+        throw new Error("Authentication token not found. Please log in again.");
+      }
+
+      const bookingPayload = {
+        studioId,
+        bookingDate: date,
+        startTime,
+        endTime,
+        duration,
+        hourlyRate,
+        securityDeposit,
+        totalAmount: totalPrice,
+        userId: session.user.id,
+        userName: session.user.name,
+      };
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(bookingPayload),
         },
@@ -115,13 +131,12 @@ export default function BookingCard({
         throw new Error(data.message || "Booking failed");
       }
 
+      setIsModalOpen(false);
       setSuccess("Booking successful! Redirecting...");
 
-      // সফল হওয়ার পর সরাসরি ড্যাশবোর্ড বুকিং পেজে রিডাইরেক্ট করবে
       setTimeout(() => {
-        setIsModalOpen(false);
         router.push("/dashboard/bookings");
-      }, 1000);
+      }, 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -227,7 +242,6 @@ export default function BookingCard({
               </button>
             </div>
 
-            {/* এখানে আর <form onSubmit> ব্যবহার করা হয়নি, সাধারণ div দিয়ে করা হয়েছে */}
             <div className="p-6 space-y-5">
               {/* Booking Date */}
               <div>
@@ -329,20 +343,13 @@ export default function BookingCard({
                 </div>
               </div>
 
-              {/* Error and Success Messages */}
+              {/* Error Message */}
               {error && (
                 <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/30 p-3 rounded-lg">
                   {error}
                 </p>
               )}
 
-              {success && (
-                <p className="text-sm text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 p-3 rounded-lg">
-                  {success}
-                </p>
-              )}
-
-              {/* Confirm Button with onClick */}
               <button
                 type="button"
                 disabled={!isBookingReady || isLoading}
@@ -357,6 +364,26 @@ export default function BookingCard({
               </p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Success Toast */}
+      {success && (
+        <div className="fixed bottom-6 right-6 z-[200] flex items-center gap-3 rounded-xl bg-emerald-600 px-5 py-4 text-white shadow-xl animate-fadeIn">
+          <svg
+            className="w-6 h-6 shrink-0"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          <span className="font-medium">{success}</span>
         </div>
       )}
     </>

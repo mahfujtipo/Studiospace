@@ -1,8 +1,7 @@
-// src/app/dashboard/my-studios/page.tsx
 "use client";
-
 import { useEffect, useState, useMemo } from "react";
 import { authClient } from "@/lib/auth-client";
+import { clientsidejwt } from "@/lib/clientsidejwt";
 import Link from "next/link";
 
 export interface Studio {
@@ -47,11 +46,18 @@ export default function MyStudiosPage() {
 
     try {
       setIsLoading(true);
+
+      const token = await clientsidejwt();
+      console.log("JWT Token:", token);
+
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/studios/my-studios?email=${encodeURIComponent(
-          session.user.email,
-        )}`,
-        { cache: "no-store" },
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/studios/my-studios`,
+        {
+          cache: "no-store",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
 
       if (!res.ok) {
@@ -150,10 +156,16 @@ export default function MyStudiosPage() {
 
     try {
       setIsDeleting(true);
+
+      const token = await clientsidejwt();
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/studios/${studioToDelete}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
       );
 

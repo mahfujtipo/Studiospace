@@ -171,7 +171,7 @@ export default function AuthMenu({
     return (
       <div
         className={`h-11 w-28 animate-pulse rounded-full ${
-          isTransparent ? "bg-white/20" : "bg-gray-200"
+          isTransparent ? "bg-white/20" : "bg-gray-200 dark:bg-zinc-700"
         }`}
       />
     );
@@ -192,7 +192,7 @@ export default function AuthMenu({
               ? "rounded-xl border border-current/10 px-4 py-3 hover:bg-current/5"
               : isTransparent
                 ? "text-white/90 hover:text-white"
-                : "text-[#25233A] hover:text-emerald-600"
+                : "text-[#25233A] hover:text-emerald-600 dark:text-white dark:hover:text-emerald-400"
           }`}
         >
           Log In
@@ -220,7 +220,7 @@ export default function AuthMenu({
         className={`group flex items-center gap-3 rounded-full transition-all duration-300 ${
           mobile
             ? "w-full justify-between rounded-2xl border border-current/10 p-3 hover:bg-current/5"
-            : "rounded-full py-1 pl-1 pr-3 hover:bg-black/5"
+            : "rounded-full py-1 pl-1 pr-3 hover:bg-black/5 dark:hover:bg-white/10"
         }`}
       >
         <span className="rounded-full bg-gradient-to-tr from-emerald-400 via-green-500 to-teal-400 p-[2px] shadow-md shadow-emerald-500/20 transition-transform duration-300 group-hover:scale-105">
@@ -247,7 +247,9 @@ export default function AuthMenu({
         >
           <span
             className={`block max-w-32 truncate text-sm font-semibold ${
-              isTransparent && !mobile ? "text-white" : "text-[#25233A]"
+              isTransparent && !mobile
+                ? "text-white"
+                : "text-[#25233A] dark:text-white"
             }`}
           >
             {userName}
@@ -255,7 +257,9 @@ export default function AuthMenu({
 
           <span
             className={`block text-[11px] ${
-              isTransparent && !mobile ? "text-white/60" : "text-gray-500"
+              isTransparent && !mobile
+                ? "text-white/60"
+                : "text-gray-500 dark:text-zinc-400"
             }`}
           >
             My Account
@@ -265,7 +269,11 @@ export default function AuthMenu({
         <svg
           className={`h-4 w-4 shrink-0 transition-transform duration-300 ${
             isDropdownOpen ? "rotate-180" : ""
-          } ${isTransparent && !mobile ? "text-white" : "text-gray-500"}`}
+          } ${
+            isTransparent && !mobile
+              ? "text-white"
+              : "text-gray-500 dark:text-zinc-400"
+          }`}
           fill="none"
           stroke="currentColor"
           strokeWidth="2"

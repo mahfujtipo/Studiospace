@@ -3,6 +3,7 @@
 
 import { useState, useEffect, FormEvent } from "react";
 import { authClient } from "@/lib/auth-client";
+import { clientsidejwt } from "@/lib/clientsidejwt";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 
@@ -112,12 +113,20 @@ export default function EditStudioPage() {
 
     try {
       setIsSubmitting(true);
+
+      const token = await clientsidejwt();
+
+      if (!token) {
+        throw new Error("Authentication token not found. Please log in again.");
+      }
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/studios/${studioId}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             ...formData,
