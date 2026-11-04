@@ -1,8 +1,12 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { connection } from "next/server";
 import type { Studio } from "@/types/studio";
 import BookingCard from "@/components/BookingCard";
+
+// Allows blocking route runtime configuration to handle dynamic un-cached data smoothly
+export const instant = false;
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80";
@@ -231,7 +235,9 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export default function StudioDetailsPage({ params }: PageProps) {
+export default async function StudioDetailsPage({ params }: PageProps) {
+  await connection();
+
   return (
     <main className="min-h-screen py-12 md:py-20 bg-gray-50 dark:bg-zinc-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

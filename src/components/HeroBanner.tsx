@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const slides = [
@@ -16,13 +17,12 @@ const slides = [
   {
     id: 2,
     image:
-      "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=2400&q=85", // Professional recording & studio equipment setup
+      "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=2400&q=85",
     subtitle: "YOUR VISION, OUR SPACE",
     title: "Every Great Idea Deserves the Perfect Space.",
     description:
       "Bring your creative vision to life in inspiring spaces built for photography, filmmaking, podcasts, and unforgettable projects.",
   },
-
   {
     id: 3,
     image:
@@ -37,25 +37,23 @@ const slides = [
 export default function HeroBanner() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [animationKey, setAnimationKey] = useState(0);
 
   const activeSlide = slides[currentSlide];
 
-  const changeSlide = (index: number) => {
-    setCurrentSlide((index + slides.length) % slides.length);
-    setAnimationKey((previous) => previous + 1);
-  };
-
+  // Auto-play effect to change slide every 3 seconds
   useEffect(() => {
     if (paused) return;
 
     const interval = setInterval(() => {
-      setCurrentSlide((previous) => (previous + 1) % slides.length);
-      setAnimationKey((previous) => previous + 1);
-    }, 6000);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [paused]);
+
+  const handleManualChange = (index: number) => {
+    setCurrentSlide((index + slides.length) % slides.length);
+  };
 
   return (
     <section
@@ -69,8 +67,8 @@ export default function HeroBanner() {
       {slides.map((slide, index) => (
         <div
           key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-[1500ms] ease-in-out ${
-            currentSlide === index ? "opacity-100" : "opacity-0"
+          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+            currentSlide === index ? "opacity-100 z-10" : "opacity-0 z-0"
           }`}
           aria-hidden="true"
         >
@@ -80,22 +78,24 @@ export default function HeroBanner() {
             style={{ backgroundImage: `url('${slide.image}')` }}
           />
 
-          {/* Complete Image */}
-          <img
+          {/* Optimized Next.js Image */}
+          <Image
             src={slide.image}
             alt=""
+            fill
+            priority={index === 0}
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
         </div>
       ))}
 
       {/* Background Overlays */}
-      <div className="absolute inset-0 bg-black/50" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10" />
+      <div className="absolute inset-0 bg-black/50 z-20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 z-20" />
 
       {/* Hero Content */}
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pt-40 pb-32 sm:px-8 sm:pt-44 sm:pb-36 lg:px-10">
-        <div key={animationKey} className="max-w-3xl">
+      <div className="relative z-30 mx-auto w-full max-w-7xl px-5 pt-40 pb-32 sm:px-8 sm:pt-44 sm:pb-36 lg:px-10">
+        <div key={currentSlide} className="max-w-3xl">
           <p className="hero-subtitle mb-4 text-[10px] font-bold tracking-[0.25em] text-emerald-400 sm:mb-5 sm:text-xs sm:tracking-[0.3em] md:text-sm">
             {activeSlide.subtitle}
           </p>
@@ -129,9 +129,9 @@ export default function HeroBanner() {
       {/* Previous Button */}
       <button
         type="button"
-        onClick={() => changeSlide(currentSlide - 1)}
+        onClick={() => handleManualChange(currentSlide - 1)}
         aria-label="Previous slide"
-        className="absolute top-1/2 left-3 z-20 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/30 text-2xl text-white backdrop-blur-md transition hover:bg-emerald-500 sm:flex sm:left-5 lg:left-8"
+        className="absolute top-1/2 left-3 z-40 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/30 text-2xl text-white backdrop-blur-md transition hover:bg-emerald-500 sm:flex sm:left-5 lg:left-8"
       >
         ‹
       </button>
@@ -139,20 +139,20 @@ export default function HeroBanner() {
       {/* Next Button */}
       <button
         type="button"
-        onClick={() => changeSlide(currentSlide + 1)}
+        onClick={() => handleManualChange(currentSlide + 1)}
         aria-label="Next slide"
-        className="absolute top-1/2 right-3 z-20 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/30 text-2xl text-white backdrop-blur-md transition hover:bg-emerald-500 sm:flex sm:right-5 lg:right-8"
+        className="absolute top-1/2 right-3 z-40 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/30 text-2xl text-white backdrop-blur-md transition hover:bg-emerald-500 sm:flex sm:right-5 lg:right-8"
       >
         ›
       </button>
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-7 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 sm:bottom-10">
+      <div className="absolute bottom-7 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 sm:bottom-10">
         {slides.map((slide, index) => (
           <button
             type="button"
             key={slide.id}
-            onClick={() => changeSlide(index)}
+            onClick={() => handleManualChange(index)}
             aria-label={`Go to slide ${index + 1}`}
             aria-current={currentSlide === index}
             className={`h-2.5 rounded-full transition-all duration-300 ${
@@ -164,7 +164,7 @@ export default function HeroBanner() {
         ))}
       </div>
 
-      <div className="absolute right-5 bottom-7 z-20 hidden text-sm font-medium tracking-widest text-white/80 sm:block lg:right-8">
+      <div className="absolute right-5 bottom-7 z-40 hidden text-sm font-medium tracking-widest text-white/80 sm:block lg:right-8">
         0{currentSlide + 1}{" "}
         <span className="text-white/40">/ 0{slides.length}</span>
       </div>

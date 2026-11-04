@@ -292,11 +292,10 @@ export default function AboutPage() {
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-zinc-100">
-      {/* 1. Hero Section */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-zinc-900 text-white">
-        <div className="absolute inset-0 z-0 opacity-40">
+      <section className="relative min-h-[90vh] flex items-center justify-center pt-48 pb-36 md:pt-60 md:pb-48 overflow-hidden bg-zinc-900 text-white">
+        <div className="absolute inset-0 z-0 opacity-50">
           <Image
-            src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1920&q=80"
+            src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=2000&q=85"
             alt="Studio Space Background"
             fill
             priority
@@ -305,7 +304,7 @@ export default function AboutPage() {
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-900/60 to-transparent z-0" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
           <span className="inline-block text-emerald-400 font-semibold text-xs sm:text-sm tracking-widest uppercase mb-3 bg-emerald-950/60 border border-emerald-800/60 px-4 py-1.5 rounded-full">
             ABOUT STUDIOSPACE
           </span>
@@ -328,8 +327,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-
-      {/* 2. Our Story */}
       <section className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
@@ -370,8 +367,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-
-      {/* 3. Our Mission and Vision */}
       <section className="py-16 bg-white dark:bg-zinc-900/50 border-y border-gray-200 dark:border-zinc-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
@@ -384,7 +379,6 @@ export default function AboutPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Mission Card */}
             <div className="bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-8 sm:p-10 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-2 h-full bg-emerald-600 dark:bg-emerald-500" />
               <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xl mb-6">
@@ -400,8 +394,6 @@ export default function AboutPage() {
                 art.
               </p>
             </div>
-
-            {/* Vision Card */}
             <div className="bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-8 sm:p-10 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-2 h-full bg-emerald-600 dark:bg-emerald-500" />
               <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xl mb-6">
@@ -419,8 +411,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-
-      {/* 4. Why Choose StudioSpace? */}
       <section className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-xs tracking-widest uppercase mb-2 block">
@@ -492,7 +482,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 6. Our Values */}
       <section className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-xs tracking-widest uppercase mb-2 block">

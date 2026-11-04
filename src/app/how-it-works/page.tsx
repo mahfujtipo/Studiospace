@@ -315,27 +315,28 @@ export default function HowItWorksPage() {
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-zinc-100">
-      {/* SECTION 1: HERO SECTION */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-zinc-900 text-white">
-        <div className="absolute inset-0 z-0 opacity-35">
+      {/* SECTION 1: HERO SECTION - Increased min-height and padding for a much taller banner */}
+      <section className="relative min-h-[90vh] flex items-center justify-center pt-48 pb-36 md:pt-60 md:pb-48 overflow-hidden bg-zinc-900 text-white">
+        <div className="absolute inset-0 z-0 opacity-60">
           <Image
-            src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1920&q=80"
+            src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=2000&q=85"
             alt="Creative Studio Setup"
             fill
             priority
             className="object-cover"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/80 via-zinc-900/70 to-zinc-950 z-0" />
+        <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/60 via-zinc-900/50 to-zinc-950/80 z-0" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
           <span className="inline-block text-emerald-400 font-semibold text-xs sm:text-sm tracking-widest uppercase mb-4 bg-emerald-950/80 border border-emerald-800/80 px-4 py-1.5 rounded-full shadow-sm">
             SIMPLE. SMART. CREATIVE.
           </span>
+
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight max-w-4xl mx-auto leading-tight mb-6">
             How <span className="text-emerald-400">StudioSpace</span> Works
           </h1>
-          <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-gray-200 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
             Discovering and booking professional creative spaces made simple for
             creators, while helping studio hosts monetize their workspace
             effortlessly.
@@ -350,7 +351,7 @@ export default function HowItWorksPage() {
             </Link>
             <Link
               href="/signup"
-              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-base border border-white/20 transition-all duration-200 backdrop-blur-md text-center"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/20 hover:bg-white/30 text-white font-semibold text-base border border-white/30 transition-all duration-200 backdrop-blur-md text-center"
             >
               Get Started
             </Link>
@@ -358,7 +359,6 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* SECTION 2: HOW IT WORKS FOR CREATORS */}
       <section className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-xs tracking-widest uppercase mb-2 block">
@@ -398,7 +398,6 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* SECTION 3: HOW IT WORKS FOR STUDIO OWNERS */}
       <section className="py-16 md:py-24 bg-white dark:bg-zinc-900/50 border-y border-gray-200 dark:border-zinc-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -440,7 +439,6 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* SECTION 4: WHY STUDIOSPACE? */}
       <section className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-xs tracking-widest uppercase mb-2 block">
@@ -474,7 +472,6 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* SECTION 5: PLATFORM WORKFLOW */}
       <section className="py-16 md:py-24 bg-white dark:bg-zinc-900/50 border-t border-gray-200 dark:border-zinc-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -490,7 +487,6 @@ export default function HowItWorksPage() {
             </p>
           </div>
 
-          {/* Responsive Workflow Display */}
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4 relative">
             {workflowSteps.map((step, idx) => (
               <div
@@ -506,7 +502,6 @@ export default function HowItWorksPage() {
                   </h4>
                 </div>
 
-                {/* Arrow Connector */}
                 {idx < workflowSteps.length - 1 && (
                   <div className="my-3 lg:my-0 lg:mx-3 text-emerald-600 dark:text-emerald-400 shrink-0">
                     <svg
@@ -530,7 +525,6 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* SECTION 6: FREQUENTLY ASKED QUESTIONS */}
       <section className="py-16 md:py-24 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-xs tracking-widest uppercase mb-2 block">
@@ -575,7 +569,6 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* SECTION 7: FINAL CALL TO ACTION */}
       <section className="py-16 md:py-20 bg-zinc-900 text-white border-t border-zinc-800 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">

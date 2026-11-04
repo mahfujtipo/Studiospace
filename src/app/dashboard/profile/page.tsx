@@ -1,4 +1,3 @@
-// src/app/dashboard/profile/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -23,9 +22,9 @@ export default function ProfilePage() {
 
   if (isPending) {
     return (
-      <div className="text-center py-20">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent"></div>
-        <p className="text-sm text-gray-500 dark:text-zinc-400 mt-3">
+      <div className="py-20 text-center">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
+        <p className="mt-3 text-sm text-gray-500 dark:text-zinc-400">
           Loading profile...
         </p>
       </div>
@@ -33,15 +32,12 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
-      {/* Profile Header Card */}
-      <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl p-8 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-r from-emerald-600 to-emerald-800" />
-
-        <div className="relative pt-16 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-6">
-          <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
-            {/* Profile Avatar Container */}
-            <div className="relative w-28 h-28 rounded-2xl overflow-hidden shadow-xl border-4 border-white dark:border-zinc-900 bg-emerald-100 dark:bg-emerald-950/80 shrink-0 flex items-center justify-center">
+    <div className="mx-auto max-w-4xl space-y-8">
+      <div className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
+        <div className="h-10 w-full bg-gradient-to-r from-emerald-600 to-emerald-800" />
+        <div className="flex flex-col justify-between gap-6 p-8 sm:flex-row sm:items-center">
+          <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
+            <div className="relative flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-3xl border-4 border-[var(--card)] bg-emerald-100 shadow-xl dark:bg-emerald-950/80">
               {showFallback ? (
                 <span className="text-4xl font-extrabold text-emerald-600 dark:text-emerald-400">
                   {firstLetter}
@@ -56,86 +52,85 @@ export default function ProfilePage() {
                 />
               )}
             </div>
-
-            <div className="space-y-1">
-              <h2 className="text-2xl font-black text-gray-900 dark:text-white">
+            <div className="space-y-1.5">
+              <h2 className="text-2xl font-black capitalize tracking-tight text-[var(--foreground)] sm:text-3xl">
                 {user.name}
               </h2>
-              <p className="text-sm text-gray-500 dark:text-zinc-400">
+
+              <p className="text-sm font-medium text-gray-500 dark:text-zinc-400">
                 {user.email}
               </p>
-              <span className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900">
-                {user.role}
-              </span>
+
+              <div className="pt-1">
+                <span className="inline-block rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1 text-xs font-semibold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  {user.role}
+                </span>
+              </div>
             </div>
           </div>
-
-          {/* Action Buttons */}
-          <div className="flex items-center gap-3 w-full sm:w-auto justify-center">
+          <div className="flex w-full items-center justify-center gap-3 sm:w-auto">
             <button
               type="button"
               onClick={() => window.history.back()}
-              className="px-5 py-2.5 rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-200 text-xs font-semibold hover:bg-gray-200 transition-colors border border-gray-200 dark:border-zinc-700"
+              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-5 py-2.5 text-xs font-semibold text-[var(--foreground)] shadow-sm transition-colors hover:brightness-95"
             >
               Back
             </button>
+
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
-              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors shadow-lg shadow-emerald-600/20"
+              className="rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-semibold text-white shadow-lg shadow-emerald-600/20 transition-colors hover:bg-emerald-700"
             >
-              Update
+              Update Profile
             </button>
           </div>
         </div>
       </div>
-
-      {/* Profile Details Grid */}
-      <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl p-8 shadow-sm space-y-6">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white pb-4 border-b border-gray-100 dark:border-zinc-800">
+      <div className="space-y-6 rounded-3xl border border-[var(--border)] bg-[var(--card)] p-8 shadow-sm">
+        <h3 className="border-b border-[var(--border)] pb-4 text-lg font-bold text-[var(--foreground)]">
           Personal Details
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+        <div className="grid grid-cols-1 gap-6 text-sm md:grid-cols-2">
           <div>
-            <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
+            <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-400">
               Full Name
             </span>
-            <span className="font-medium text-gray-900 dark:text-white">
+            <span className="font-medium capitalize text-[var(--foreground)]">
               {user.name}
             </span>
           </div>
 
           <div>
-            <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
+            <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-400">
               Email Address
             </span>
-            <span className="font-medium text-gray-900 dark:text-white">
+            <span className="font-medium text-[var(--foreground)]">
               {user.email}
             </span>
           </div>
 
           <div>
-            <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
+            <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-400">
               Account Role
             </span>
-            <span className="font-medium text-gray-900 dark:text-white">
+            <span className="font-medium text-[var(--foreground)]">
               {user.role}
             </span>
           </div>
 
           <div>
-            <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
+            <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-400">
               Status
             </span>
-            <span className="font-medium text-emerald-600 dark:text-emerald-400">
+            <span className="flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
               Active & Verified
             </span>
           </div>
         </div>
       </div>
-
-      {/* Update Profile Modal Component */}
       <UpdateProfileModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 * {
   box-sizing: border-box;
@@ -10,13 +11,16 @@ html {
 
 body {
   margin: 0;
-  padding-top: 0; /* Changed from 80px to 0 so the hero slides under the navbar */
-  background: #030712; /* Set to dark background (Tailwind's gray-950) matching your hero */
-  color: #111827;
+  padding-top: 0;
   font-family: Arial, Helvetica, sans-serif;
+  background-color: #ffffff; 
+  color: #111827; 
+}
+.dark body {
+  background-color: #030712; 
+  color: #f9fafb; 
 }
 
-/* Hero heading animation */
 
 @keyframes headingEnter {
   from {
@@ -32,8 +36,6 @@ body {
   }
 }
 
-/* Description animation */
-
 @keyframes descriptionEnter {
   from {
     opacity: 0;
@@ -45,8 +47,6 @@ body {
     transform: translateY(0);
   }
 }
-
-/* CTA animation */
 
 @keyframes buttonsEnter {
   from {
@@ -77,8 +77,6 @@ body {
 .hero-subtitle {
   animation: descriptionEnter 0.7s ease 0.2s both;
 }
-
-/* Reduced motion accessibility */
 
 @media (prefers-reduced-motion: reduce) {
   *,
