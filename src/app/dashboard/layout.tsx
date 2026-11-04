@@ -173,16 +173,17 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         />
       )}
 
+      {/* Fixed Sidebar */}
       <aside
         className={`
-          fixed lg:sticky top-20 z-50 h-[calc(100vh-80px)] bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 
-          transition-all duration-300 flex flex-col justify-between shadow-sm
+          fixed top-20 left-0 z-50 h-[calc(100vh-80px)] bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 
+          transition-all duration-300 flex flex-col justify-between shadow-sm overflow-y-hidden
           ${collapsed ? "lg:w-20" : "lg:w-72"}
-          ${mobileOpen ? "left-0 w-72" : "-left-72 lg:left-0"}
+          ${mobileOpen ? "w-72" : "-translate-x-full lg:translate-x-0"}
         `}
       >
-        <div>
-          <div className="p-4 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-between">
+        <div className="flex flex-col h-full overflow-y-auto">
+          <div className="p-4 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-between shrink-0">
             {!collapsed && (
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-emerald-600/20">
@@ -235,7 +236,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             </button>
           </div>
 
-          <nav className="p-3 space-y-1.5">
+          <nav className="p-3 space-y-1.5 flex-1">
             {navItems.map((item) => {
               return item.isPlaceholder ? (
                 <div
@@ -293,37 +294,40 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
-        </div>
 
-        <div className="p-3 border-t border-gray-100 dark:border-zinc-800">
-          <Link
-            href="/"
-            title={collapsed ? "Back to Website" : undefined}
-            className={`
-              flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-600 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors
-              ${collapsed ? "justify-center" : ""}
-            `}
-          >
-            <svg
-              className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          <div className="p-3 border-t border-gray-100 dark:border-zinc-800 shrink-0">
+            <Link
+              href="/"
+              title={collapsed ? "Back to Website" : undefined}
+              className={`
+                flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-600 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors
+                ${collapsed ? "justify-center" : ""}
+              `}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              />
-            </svg>
-            {!collapsed && <span className="truncate">Back to Website</span>}
-          </Link>
+              <svg
+                className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
+              {!collapsed && <span className="truncate">Back to Website</span>}
+            </Link>
+          </div>
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 px-6 py-4 sticky top-20 lg:top-20 z-20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {/* Main Content Wrapper with Left Margin adjustment based on sidebar width */}
+      <div
+        className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${collapsed ? "lg:ml-20" : "lg:ml-72"}`}
+      >
+        <header className="bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 px-6 py-4 sticky top-20 z-20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-zinc-400 mb-1">
               <span>StudioSpace</span>

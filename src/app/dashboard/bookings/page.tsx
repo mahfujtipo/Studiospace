@@ -1,13 +1,14 @@
-// src/app/dashboard/bookings/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
+import StudioBookingCard from "@/components/StudioBookingCard";
 
 interface Booking {
   _id: string;
   studioId: string;
+  studioName?: string;
   bookingDate: string;
   startTime: string;
   endTime: string;
@@ -215,93 +216,17 @@ export default function MyBookingsPage() {
             const active = isBookingActive(booking);
 
             return (
-              <div
+              <StudioBookingCard
                 key={booking._id}
-                className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow space-y-4"
-              >
-                <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-zinc-800">
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900 uppercase">
-                    {booking.status || "Pending"}
-                  </span>
-
-                  <span className="text-xs text-gray-400 dark:text-zinc-500 font-medium">
-                    ID: {booking._id.slice(-6)}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="block text-xs text-gray-400 uppercase font-semibold tracking-wider mb-1">
-                      Booking Date
-                    </span>
-                    <span className="font-bold text-gray-900 dark:text-white">
-                      {booking.bookingDate}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="block text-xs text-gray-400 uppercase font-semibold tracking-wider mb-1">
-                      Time Slot
-                    </span>
-                    <span className="font-bold text-gray-900 dark:text-white">
-                      {booking.startTime} - {booking.endTime}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="block text-xs text-gray-400 uppercase font-semibold tracking-wider mb-1">
-                      Duration
-                    </span>
-                    <span className="font-medium text-gray-700 dark:text-zinc-300">
-                      {booking.duration} Hour
-                      {booking.duration > 1 ? "s" : ""}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="block text-xs text-gray-400 uppercase font-semibold tracking-wider mb-1">
-                      Total Amount
-                    </span>
-                    <span className="font-black text-emerald-600 dark:text-emerald-400 text-base">
-                      {formatCurrency(booking.totalAmount)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="pt-3 border-t border-gray-100 dark:border-zinc-800 flex items-center justify-between text-xs text-gray-500 dark:text-zinc-400">
-                  <span className="truncate mr-2">
-                    Studio ID: {booking.studioId}
-                  </span>
-
-                  <Link
-                    href={`/studios/${booking.studioId}`}
-                    className="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline whitespace-nowrap"
-                  >
-                    View Studio &rarr;
-                  </Link>
-                </div>
-
-                {active && (
-                  <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-lg p-3">
-                    This booking is currently active. You cannot delete it until
-                    the booking period ends.
-                  </p>
-                )}
-
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    disabled={active || deletingId === booking._id}
-                    onClick={() => {
-                      setDeleteError("");
-                      setSelectedBooking(booking);
-                    }}
-                    className="w-full px-4 py-2.5 rounded-xl border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 font-semibold text-sm hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-                  >
-                    {active ? "Deletion Unavailable" : "Delete Booking"}
-                  </button>
-                </div>
-              </div>
+                booking={booking}
+                active={active}
+                isDeleting={deletingId === booking._id}
+                onDeleteClick={(selected) => {
+                  setDeleteError("");
+                  setSelectedBooking(selected);
+                }}
+                formatCurrency={formatCurrency}
+              />
             );
           })}
         </div>
@@ -322,6 +247,11 @@ export default function MyBookingsPage() {
             </div>
 
             <div className="bg-gray-50 dark:bg-zinc-800 rounded-xl p-4 space-y-2 text-sm">
+              <p className="text-gray-700 dark:text-zinc-300">
+                <span className="font-semibold">Studio:</span>{" "}
+                {selectedBooking.studioName || "Studio Space"}
+              </p>
+
               <p className="text-gray-700 dark:text-zinc-300">
                 <span className="font-semibold">Date:</span>{" "}
                 {selectedBooking.bookingDate}
