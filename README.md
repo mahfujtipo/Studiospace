@@ -35,12 +35,14 @@
 - Better Auth
 - MongoDB
 - React Server and Client Components
+- JWT (JSON Web Token)
 
 ### Backend
 - Node.js
 - Express.js
 - MongoDB
 - REST API
+- JWT (JSON Web Token)
 
 ### Deployment & Tools
 - Vercel
