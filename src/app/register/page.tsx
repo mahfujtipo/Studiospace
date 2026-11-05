@@ -1,3 +1,4 @@
+// src/app/register/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -5,10 +6,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
   const router = useRouter();
-
   const [fullName, setFullName] = useState("");
   const [photoURL, setPhotoURL] = useState("");
   const [email, setEmail] = useState("");
@@ -17,18 +18,14 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
-
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [currentYear, setCurrentYear] = useState("2026");
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear().toString());
   }, []);
 
-  // Validation checks
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isPhotoURLValid =
     photoURL.trim() === "" || /^https?:\/\/.+/i.test(photoURL.trim());
@@ -36,7 +33,6 @@ export default function RegisterPage() {
   const hasUppercase = /[A-Z]/.test(password);
   const hasLowercase = /[a-z]/.test(password);
   const isPasswordMatch = password === confirmPassword && password.length > 0;
-
   const isFormValid =
     fullName.trim() !== "" &&
     isEmailValid &&
@@ -49,12 +45,8 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    setErrorMessage("");
-    setSuccessMessage("");
-
     if (!isFormValid) {
-      setErrorMessage(
+      toast.error(
         "Please ensure all requirements are met and terms are accepted.",
       );
       return;
@@ -71,55 +63,56 @@ export default function RegisterPage() {
         {
           onRequest: () => {
             setIsLoading(true);
-            setErrorMessage("");
-            setSuccessMessage("");
           },
-          onSuccess: () => {
-            setSuccessMessage("Account created successfully! Redirecting...");
+          onSuccess: async () => {
+            try {
+              await authClient.signOut();
+            } catch (err) {
+              console.error(err);
+            }
+
+            toast.success("Account created successfully! Redirecting...");
+            setIsLoading(false);
+
             setTimeout(() => {
-              router.push("/login");
+              window.location.href = "/login";
             }, 1000);
           },
           onError: (ctx) => {
-            setErrorMessage(ctx.error.message);
+            setIsLoading(false);
+            toast.error(ctx.error.message || "Registration failed.");
           },
         },
       );
     } catch (error) {
-      setErrorMessage(
+      setIsLoading(false);
+      toast.error(
         error instanceof Error
           ? error.message
           : "Something went wrong. Please try again.",
       );
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  // Google Sign Up Handler
   const handleGoogleSignUp = async () => {
-    setErrorMessage("");
-    setSuccessMessage("");
     setIsGoogleLoading(true);
-
     try {
       await authClient.signIn.social({
         provider: "google",
         callbackURL: "/",
       });
     } catch (error) {
-      setErrorMessage(
+      setIsGoogleLoading(false);
+      toast.error(
         error instanceof Error
           ? error.message
           : "Google sign up failed. Please try again.",
       );
-      setIsGoogleLoading(false);
     }
   };
 
   return (
     <main className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white dark:bg-zinc-950 pt-20">
-      {/* Left Side: Simple Clean Studio Image with White/Light View */}
       <div className="hidden lg:relative lg:flex flex-col justify-between bg-zinc-900 text-white p-12 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
@@ -132,7 +125,6 @@ export default function RegisterPage() {
         </div>
         <div className="absolute inset-0 bg-gradient-to-tr from-white/95 via-white/70 to-transparent dark:from-zinc-950/95 dark:via-zinc-900/70 z-0" />
 
-        {/* Top Branding Header */}
         <div className="relative z-10">
           <Link
             href="/"
@@ -145,7 +137,6 @@ export default function RegisterPage() {
           </Link>
         </div>
 
-        {/* Center Content */}
         <div className="relative z-10 max-w-md my-auto py-12 text-gray-900 dark:text-white">
           <span className="inline-block text-emerald-600 dark:text-emerald-400 font-semibold text-xs tracking-widest uppercase mb-3 bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-800/80 px-3.5 py-1 rounded-full">
             JOIN THE COMMUNITY
@@ -158,7 +149,6 @@ export default function RegisterPage() {
             own creative studio, StudioSpace makes collaboration effortless.
           </p>
 
-          {/* Key Benefits */}
           <div className="space-y-3">
             {[
               "Find your perfect creative space",
@@ -178,13 +168,11 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        {/* Footer info */}
         <div className="relative z-10 text-xs text-gray-600 dark:text-gray-400">
           © {currentYear} StudioSpace Marketplace. All rights reserved.
         </div>
       </div>
 
-      {/* Right Side: Registration Form */}
       <div className="flex flex-col justify-center px-6 sm:px-12 md:px-20 py-12 lg:py-16 bg-gray-50 dark:bg-zinc-950">
         <div className="max-w-md w-full mx-auto">
           <div className="mb-8">
@@ -196,21 +184,7 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          {/* Feedback Alerts */}
-          {errorMessage && (
-            <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 text-xs font-medium">
-              {errorMessage}
-            </div>
-          )}
-
-          {successMessage && (
-            <div className="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400 text-xs font-medium">
-              {successMessage}
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Full Name */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 uppercase tracking-wider mb-1.5">
                 Full Name
@@ -226,7 +200,6 @@ export default function RegisterPage() {
               />
             </div>
 
-            {/* Optional Profile Photo URL */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 uppercase tracking-wider mb-1.5">
                 Profile Photo URL{" "}
@@ -249,7 +222,6 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Email Address */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 uppercase tracking-wider mb-1.5">
                 Email Address
@@ -265,7 +237,6 @@ export default function RegisterPage() {
               />
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 uppercase tracking-wider mb-1.5">
                 Password
@@ -289,7 +260,6 @@ export default function RegisterPage() {
                 </button>
               </div>
 
-              {/* Password checklist */}
               <div className="grid grid-cols-2 gap-2 mt-2 text-[11px]">
                 <span
                   className={
@@ -321,7 +291,6 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Confirm Password */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 uppercase tracking-wider mb-1.5">
                 Confirm Password
@@ -351,7 +320,6 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Terms and Conditions Checkbox */}
             <div className="pt-1">
               <label className="flex items-start gap-2.5 cursor-pointer">
                 <input
@@ -377,7 +345,6 @@ export default function RegisterPage() {
               </label>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading || isGoogleLoading || !isFormValid}
@@ -412,7 +379,6 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200 dark:border-zinc-800" />
@@ -424,7 +390,6 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Google Sign Up Button */}
           <button
             type="button"
             onClick={handleGoogleSignUp}
@@ -479,7 +444,6 @@ export default function RegisterPage() {
             )}
           </button>
 
-          {/* Bottom Redirect */}
           <p className="text-center text-xs text-gray-600 dark:text-zinc-400 mt-8">
             Already have an account?{" "}
             <Link

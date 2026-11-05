@@ -1,9 +1,11 @@
+// src/components/BookingCard.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { clientsidejwt } from "@/lib/clientsidejwt";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner"; // শুধুমাত্র toast ইমপোর্ট রাখা হয়েছে
 
 interface BookingCardProps {
   studioId: string;
@@ -26,7 +28,6 @@ export default function BookingCard({
   const [today, setToday] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     const currentDate = new Date();
@@ -50,16 +51,6 @@ export default function BookingCard({
       document.removeEventListener("keydown", handleEscape);
     };
   }, [isModalOpen]);
-
-  useEffect(() => {
-    if (!success) return;
-
-    const timeout = setTimeout(() => {
-      setSuccess("");
-    }, 3000);
-
-    return () => clearTimeout(timeout);
-  }, [success]);
 
   const startMinutes = startTime
     ? Number(startTime.split(":")[0]) * 60 + Number(startTime.split(":")[1])
@@ -85,13 +76,14 @@ export default function BookingCard({
     if (!isBookingReady || isLoading) return;
 
     if (!session?.user) {
-      setError("Please login before booking a studio.");
+      const errorMsg = "Please login before booking a studio.";
+      setError(errorMsg);
+      toast.error(errorMsg);
       return;
     }
 
     setIsLoading(true);
     setError("");
-    setSuccess("");
 
     try {
       const token = await clientsidejwt();
@@ -132,13 +124,16 @@ export default function BookingCard({
       }
 
       setIsModalOpen(false);
-      setSuccess("Booking successful! Redirecting...");
+      toast.success("Booking successful! Redirecting...");
 
       setTimeout(() => {
         router.push("/dashboard/bookings");
       }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      const errorMsg =
+        err instanceof Error ? err.message : "Something went wrong";
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }
@@ -176,7 +171,6 @@ export default function BookingCard({
           type="button"
           onClick={() => {
             setError("");
-            setSuccess("");
             setIsModalOpen(true);
           }}
           className="w-full inline-flex items-center justify-center py-3.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-base transition-colors shadow-lg shadow-emerald-600/25"
@@ -364,26 +358,6 @@ export default function BookingCard({
               </p>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Success Toast */}
-      {success && (
-        <div className="fixed bottom-6 right-6 z-[200] flex items-center gap-3 rounded-xl bg-emerald-600 px-5 py-4 text-white shadow-xl animate-fadeIn">
-          <svg
-            className="w-6 h-6 shrink-0"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-          <span className="font-medium">{success}</span>
         </div>
       )}
     </>

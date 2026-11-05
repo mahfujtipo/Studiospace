@@ -6,6 +6,7 @@ import { authClient } from "@/lib/auth-client";
 import { clientsidejwt } from "@/lib/clientsidejwt";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { toast, Toaster } from "sonner";
 
 const availableAmenities = [
   "Wi-Fi",
@@ -39,7 +40,6 @@ export default function EditStudioPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [toastMessage, setToastMessage] = useState("");
 
   useEffect(() => {
     if (!studioId) return;
@@ -73,9 +73,10 @@ export default function EditStudioPage() {
           setSelectedAmenities(studio.amenities);
         }
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Error loading studio data.",
-        );
+        const errorMsg =
+          err instanceof Error ? err.message : "Error loading studio data.";
+        setError(errorMsg);
+        toast.error(errorMsg);
       } finally {
         setIsLoading(false);
       }
@@ -104,10 +105,11 @@ export default function EditStudioPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
-    setToastMessage("");
 
     if (!session?.user?.email) {
-      setError("You must be logged in as a host to update this studio.");
+      const errorMsg = "You must be logged in as a host to update this studio.";
+      setError(errorMsg);
+      toast.error(errorMsg);
       return;
     }
 
@@ -143,12 +145,17 @@ export default function EditStudioPage() {
         throw new Error(data.message || "Failed to update studio.");
       }
 
-      setToastMessage("Studio updated successfully!");
+      // এখানে সফলভাবে আপডেট হওয়ার টোস্ট ট্রিগার হচ্ছে
+      toast.success("Studio updated successfully!");
+
       setTimeout(() => {
         router.push("/dashboard/my-studios");
       }, 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      const errorMsg =
+        err instanceof Error ? err.message : "Something went wrong.";
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -167,12 +174,8 @@ export default function EditStudioPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-fadeIn relative pb-16">
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-emerald-600 text-white px-6 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce">
-          <span>✅</span>
-          <span className="text-sm font-semibold">{toastMessage}</span>
-        </div>
-      )}
+      {/* লোকাল ব্যাকআপ হিসেবে Toaster কম্পোনেন্ট যোগ করা হলো যাতে টোস্ট রেন্ডার হতে মিস না করে */}
+      <Toaster position="top-center" richColors closeButton />
 
       <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-sm flex items-center justify-between">
         <div>

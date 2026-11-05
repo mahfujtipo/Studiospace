@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 interface AuthMenuProps {
   isTransparent?: boolean;
@@ -155,13 +156,23 @@ export default function AuthMenu({
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
+            toast.success("Signed out successfully!");
             setIsDropdownOpen(false);
             onNavigate?.();
             router.push("/");
             router.refresh();
           },
+          onError: (ctx) => {
+            toast.error(ctx.error.message || "Failed to sign out.");
+          },
         },
       });
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
     } finally {
       setIsSigningOut(false);
     }

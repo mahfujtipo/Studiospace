@@ -3,25 +3,25 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage("");
-    setSuccessMessage("");
 
     if (!email.trim() || !password) {
-      setErrorMessage("Please fill in all required fields.");
+      toast.error("Please fill in all required fields.");
       return;
     }
 
@@ -31,24 +31,25 @@ export default function LoginPage() {
           email: email.trim(),
           password,
           rememberMe,
-          callbackURL: "/",
         },
         {
           onRequest: () => {
             setIsLoading(true);
-            setErrorMessage("");
-            setSuccessMessage("");
           },
           onSuccess: () => {
-            setSuccessMessage("Sign in successful!");
+            toast.success("Sign in successful!");
+
+            setTimeout(() => {
+              router.push("/");
+            }, 1500);
           },
           onError: (ctx) => {
-            setErrorMessage(ctx.error.message);
+            toast.error(ctx.error.message);
           },
         },
       );
     } catch (error) {
-      setErrorMessage(
+      toast.error(
         error instanceof Error
           ? error.message
           : "Something went wrong. Please try again.",
@@ -60,8 +61,6 @@ export default function LoginPage() {
 
   // Google Sign In Handler
   const handleGoogleSignIn = async () => {
-    setErrorMessage("");
-    setSuccessMessage("");
     setIsGoogleLoading(true);
 
     try {
@@ -70,7 +69,7 @@ export default function LoginPage() {
         callbackURL: "/",
       });
     } catch (error) {
-      setErrorMessage(
+      toast.error(
         error instanceof Error
           ? error.message
           : "Google sign in failed. Please try again.",
@@ -158,19 +157,6 @@ export default function LoginPage() {
               Sign in to continue to your account.
             </p>
           </div>
-
-          {/* Feedback Alerts */}
-          {errorMessage && (
-            <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 text-xs font-medium">
-              {errorMessage}
-            </div>
-          )}
-
-          {successMessage && (
-            <div className="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400 text-xs font-medium">
-              {successMessage}
-            </div>
-          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
@@ -260,7 +246,7 @@ export default function LoginPage() {
                     <path
                       className="opacity-75"
                       fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0v3c0 3.042 1.135 5.824 3 7.938l-2.647z"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l-2.647z"
                     ></path>
                   </svg>
                   Signing in...

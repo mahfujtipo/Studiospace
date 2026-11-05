@@ -1,8 +1,10 @@
+// src/app/dashboard/my-studios/page.tsx
 "use client";
 import { useEffect, useState, useMemo } from "react";
 import { authClient } from "@/lib/auth-client";
 import { clientsidejwt } from "@/lib/clientsidejwt";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export interface Studio {
   _id: string;
@@ -36,7 +38,6 @@ export default function MyStudiosPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [studioToDelete, setStudioToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
 
   const fetchUserStudios = async () => {
     if (!session?.user?.email) {
@@ -73,7 +74,10 @@ export default function MyStudiosPage() {
         : [];
       setStudios(studiosWithStatus);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      const errorMsg =
+        err instanceof Error ? err.message : "Something went wrong.";
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }
@@ -173,10 +177,10 @@ export default function MyStudiosPage() {
       if (!res.ok) throw new Error(data.message || "Failed to delete studio.");
 
       setStudios((prev) => prev.filter((s) => s._id !== studioToDelete));
-      setToastMessage("Studio deleted successfully!");
-      setTimeout(() => setToastMessage(""), 3000);
+      toast.success("Studio deleted successfully!");
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to delete.");
+      const errorMsg = err instanceof Error ? err.message : "Failed to delete.";
+      toast.error(errorMsg);
     } finally {
       setIsDeleting(false);
       setDeleteModalOpen(false);
@@ -189,13 +193,6 @@ export default function MyStudiosPage() {
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto animate-fadeIn relative">
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-emerald-600 text-white px-6 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce">
-          <span>✅</span>
-          <span className="text-sm font-semibold">{toastMessage}</span>
-        </div>
-      )}
-
       <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">
@@ -205,6 +202,7 @@ export default function MyStudiosPage() {
             Manage all the studios you have listed on StudioSpace.
           </p>
         </div>
+
         <Link
           href="/dashboard/add-studio"
           className="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-colors shadow-sm shadow-emerald-600/20 flex items-center gap-2"
@@ -222,6 +220,7 @@ export default function MyStudiosPage() {
             {stats.total}
           </div>
         </div>
+
         <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
             Available Studios
@@ -230,6 +229,7 @@ export default function MyStudiosPage() {
             {stats.available}
           </div>
         </div>
+
         <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
           <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
             Booked Studios
@@ -238,6 +238,7 @@ export default function MyStudiosPage() {
             {stats.booked}
           </div>
         </div>
+
         <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
           <span className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
             Inactive Studios
@@ -319,12 +320,15 @@ export default function MyStudiosPage() {
           <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto text-2xl font-bold">
             🏢
           </div>
+
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">
             No Studios Found
           </h3>
+
           <p className="text-sm text-gray-500 dark:text-zinc-400 max-w-sm mx-auto">
             You haven't listed any studios matching your filter or criteria yet.
           </p>
+
           <Link
             href="/dashboard/add-studio"
             className="inline-block px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs"
@@ -349,6 +353,7 @@ export default function MyStudiosPage() {
                     alt={studio.title}
                     className="w-full h-full object-cover"
                   />
+
                   <span
                     className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-md ${
                       studio.status === "booked"
@@ -383,6 +388,7 @@ export default function MyStudiosPage() {
                         {formatCurrency(studio.hourlyRate)}/hr
                       </span>
                     </div>
+
                     <div>
                       <span className="block text-gray-400">
                         Security Deposit
@@ -402,12 +408,14 @@ export default function MyStudiosPage() {
                 >
                   View
                 </Link>
+
                 <Link
                   href={`/dashboard/my-studios/${studio._id}/edit`}
                   className="flex-1 text-center py-2 rounded-xl bg-white dark:bg-zinc-800 hover:bg-blue-50 text-blue-600 border border-gray-200 dark:border-zinc-700 font-semibold text-xs transition-colors"
                 >
                   Edit
                 </Link>
+
                 <button
                   onClick={() => confirmDelete(studio._id)}
                   className="flex-1 text-center py-2 rounded-xl bg-white dark:bg-zinc-800 hover:bg-red-50 text-red-600 border border-gray-200 dark:border-zinc-700 font-semibold text-xs transition-colors"
@@ -426,10 +434,12 @@ export default function MyStudiosPage() {
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">
               Confirm Deletion
             </h3>
+
             <p className="text-sm text-gray-500 dark:text-zinc-400">
               Are you sure you want to delete this studio listing? This action
               cannot be undone.
             </p>
+
             <div className="flex items-center justify-end gap-3 pt-4">
               <button
                 onClick={() => setDeleteModalOpen(false)}
@@ -437,6 +447,7 @@ export default function MyStudiosPage() {
               >
                 Cancel
               </button>
+
               <button
                 disabled={isDeleting}
                 onClick={handleDelete}

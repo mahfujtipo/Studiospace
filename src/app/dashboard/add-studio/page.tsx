@@ -6,6 +6,7 @@ import { authClient } from "@/lib/auth-client";
 import { clientsidejwt } from "@/lib/clientsidejwt";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 
 const availableAmenities = [
   "Wi-Fi",
@@ -61,7 +62,9 @@ export default function AddStudioPage() {
     setSuccessMessage("");
 
     if (!session?.user?.email) {
-      setError("You must be logged in as a host to add a studio.");
+      const errorMsg = "You must be logged in as a host to add a studio.";
+      setError(errorMsg);
+      toast.error(errorMsg);
       return;
     }
 
@@ -94,12 +97,18 @@ export default function AddStudioPage() {
         throw new Error(data.message || "Failed to add studio.");
       }
 
-      setSuccessMessage("Studio added successfully! Redirecting...");
+      const successMsg = "Studio added successfully! Redirecting...";
+      setSuccessMessage(successMsg);
+      toast.success(successMsg);
+
       setTimeout(() => {
         router.push("/dashboard/my-studios");
       }, 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      const errorMsg =
+        err instanceof Error ? err.message : "Something went wrong.";
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setIsSubmitting(false);
     }

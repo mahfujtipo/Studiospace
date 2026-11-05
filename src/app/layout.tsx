@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import "./globals.css";
 import Footer from "@/components/Footer";
 import { Suspense } from "react";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "StudioSpace",
@@ -32,12 +33,16 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-white dark:bg-zinc-950 text-gray-900 dark:text-zinc-100 transition-colors">
+        <Toaster position="top-center" richColors closeButton />
+
         <Suspense
           fallback={<div className="h-20 bg-[#F8F7FF] dark:bg-zinc-950" />}
         >
           <Navbar />
         </Suspense>
+
         {children}
+
         <Footer />
       </body>
     </html>

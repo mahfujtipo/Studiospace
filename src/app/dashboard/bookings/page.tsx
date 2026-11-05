@@ -5,6 +5,7 @@ import { authClient } from "@/lib/auth-client";
 import { clientsidejwt } from "@/lib/clientsidejwt";
 import Link from "next/link";
 import StudioBookingCard from "@/components/StudioBookingCard";
+import { toast } from "sonner";
 
 interface Booking {
   _id: string;
@@ -28,7 +29,6 @@ export default function MyBookingsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [deleteError, setDeleteError] = useState<string>("");
-  const [deleteSuccess, setDeleteSuccess] = useState<string>("");
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -75,9 +75,15 @@ export default function MyBookingsPage() {
         }
 
         const data = await res.json();
-        setBookings(Array.isArray(data) ? data : []);
+
+        const processedBookings = Array.isArray(data) ? data : [];
+
+        setBookings(processedBookings);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong.");
+        const errMessage =
+          err instanceof Error ? err.message : "Something went wrong.";
+        setError(errMessage);
+        toast.error(errMessage);
       } finally {
         setIsLoading(false);
       }
@@ -98,8 +104,38 @@ export default function MyBookingsPage() {
     return { bookingStart, bookingEnd };
   };
 
+  const getBookingStatus = (booking: Booking) => {
+    const currentStatus = booking.status?.toLowerCase().trim();
+
+    if (currentStatus === "cancelled" || currentStatus === "completed") {
+      return currentStatus === "cancelled" ? "Cancelled" : "Completed";
+    }
+
+    if (!currentTime) return "Pending";
+
+    const { bookingStart, bookingEnd } = getBookingTimes(booking);
+
+    if (
+      Number.isNaN(bookingStart.getTime()) ||
+      Number.isNaN(bookingEnd.getTime())
+    ) {
+      return "Pending";
+    }
+
+    if (currentTime < bookingStart) {
+      return "Pending";
+    }
+
+    if (currentTime >= bookingStart && currentTime < bookingEnd) {
+      return "Confirmed";
+    }
+
+    return "Completed";
+  };
+
   const isBookingActive = (booking: Booking) => {
     if (!currentTime) return false;
+
     const { bookingStart, bookingEnd } = getBookingTimes(booking);
 
     if (
@@ -114,19 +150,29 @@ export default function MyBookingsPage() {
 
   const handleDeleteBooking = async () => {
     if (!selectedBooking || !session?.user?.email) {
-      setDeleteError("Please login before deleting a booking.");
+      const errMessage = "Please login before cancelling a booking.";
+      setDeleteError(errMessage);
+      toast.error(errMessage);
       return;
     }
 
     if (isBookingActive(selectedBooking)) {
-      setDeleteError("You cannot delete a booking while it is active.");
+      const errMessage = "You cannot cancel a booking while it is active.";
+      setDeleteError(errMessage);
+      toast.error(errMessage);
+      return;
+    }
+
+    if (getBookingStatus(selectedBooking) !== "Pending") {
+      const errMessage = "Only pending bookings can be cancelled.";
+      setDeleteError(errMessage);
+      toast.error(errMessage);
       return;
     }
 
     try {
       setDeletingId(selectedBooking._id);
       setDeleteError("");
-      setDeleteSuccess("");
 
       const token = await clientsidejwt();
 
@@ -147,25 +193,24 @@ export default function MyBookingsPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to delete booking.");
+        throw new Error(data.message || "Failed to cancel booking.");
       }
 
       setBookings((previousBookings) =>
-        previousBookings.filter(
-          (booking) => booking._id !== selectedBooking._id,
+        previousBookings.map((booking) =>
+          booking._id === selectedBooking._id
+            ? { ...booking, status: "Cancelled" }
+            : booking,
         ),
       );
 
-      setDeleteSuccess("Booking deleted successfully.");
+      toast.success("Booking cancelled successfully!");
       setSelectedBooking(null);
-
-      setTimeout(() => {
-        setDeleteSuccess("");
-      }, 3000);
     } catch (err) {
-      setDeleteError(
-        err instanceof Error ? err.message : "Something went wrong.",
-      );
+      const errMessage =
+        err instanceof Error ? err.message : "Something went wrong.";
+      setDeleteError(errMessage);
+      toast.error(errMessage);
     } finally {
       setDeletingId(null);
     }
@@ -193,13 +238,6 @@ export default function MyBookingsPage() {
           Book New Studio
         </Link>
       </div>
-
-      {deleteSuccess && (
-        <div className="fixed bottom-6 right-6 z-[60] bg-emerald-600 text-white px-6 py-4 rounded-xl shadow-xl flex items-center gap-3 animate-fadeIn">
-          <span>✓</span>
-          <span className="text-sm font-semibold">{deleteSuccess}</span>
-        </div>
-      )}
 
       {isLoading ? (
         <div className="text-center py-20">
@@ -239,10 +277,15 @@ export default function MyBookingsPage() {
           {bookings.map((booking) => {
             const active = isBookingActive(booking);
 
+            const displayedBooking = {
+              ...booking,
+              status: getBookingStatus(booking),
+            };
+
             return (
               <StudioBookingCard
                 key={booking._id}
-                booking={booking}
+                booking={displayedBooking}
                 active={active}
                 isDeleting={deletingId === booking._id}
                 onDeleteClick={(selected) => {
@@ -261,11 +304,11 @@ export default function MyBookingsPage() {
           <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-gray-200 dark:border-zinc-800 p-6 space-y-5">
             <div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                Delete Booking?
+                Cancel Booking?
               </h2>
 
               <p className="text-sm text-gray-500 dark:text-zinc-400 mt-2">
-                Are you sure you want to delete this booking? This action cannot
+                Are you sure you want to cancel this booking? This action cannot
                 be undone.
               </p>
             </div>
@@ -308,7 +351,7 @@ export default function MyBookingsPage() {
                 }}
                 className="px-5 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 font-semibold text-sm hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50"
               >
-                Cancel
+                Close
               </button>
 
               <button
@@ -318,8 +361,8 @@ export default function MyBookingsPage() {
                 className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm transition-colors disabled:opacity-50"
               >
                 {deletingId === selectedBooking._id
-                  ? "Deleting..."
-                  : "Yes, Delete"}
+                  ? "Cancelling..."
+                  : "Yes, Cancel Booking"}
               </button>
             </div>
           </div>

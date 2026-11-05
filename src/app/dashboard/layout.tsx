@@ -4,6 +4,7 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Toaster } from "sonner";
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -120,6 +121,9 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-[calc(100vh-80px)] mt-20 bg-gray-50 dark:bg-zinc-950 flex flex-col lg:flex-row text-gray-900 dark:text-zinc-100 relative">
+      {/* Toast Notification Container positioned at top-center */}
+      <Toaster position="top-center" richColors closeButton />
+
       <div className="lg:hidden flex items-center justify-between px-6 py-4 bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 sticky top-20 z-30">
         <div className="flex items-center gap-2">
           <span className="font-bold text-lg text-emerald-600 dark:text-emerald-400">
