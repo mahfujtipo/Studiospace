@@ -471,9 +471,7 @@ export default function ExploreClientView({
                   {/* Default Rating Badge */}
                   <div className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-xs font-bold text-white shadow-sm backdrop-blur-md dark:bg-zinc-900/80">
                     <span className="text-amber-400">⭐</span>
-                    <span>
-                      {studio.rating ? Number(studio.rating).toFixed(1) : "4.8"}
-                    </span>
+                    <span>4.8</span>
                   </div>
                 </div>
 
