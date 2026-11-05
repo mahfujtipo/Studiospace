@@ -49,7 +49,6 @@ export default function StudioBookingCard({
   return (
     <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow space-y-4">
       <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-zinc-800 gap-2">
-        {/* ডাইনামিক স্ট্যাটাস ব্যাজ */}
         <span
           className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border shrink-0 ${getStatusBadgeStyle(
             statusText,
@@ -117,8 +116,7 @@ export default function StudioBookingCard({
 
       {active && (
         <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-lg p-3">
-          This booking is currently active. You cannot cancel it until the
-          booking period ends.
+          Your Booked session is currently running ,cannot cancel now. You can cancel only before the session starts.
         </p>
       )}
 
